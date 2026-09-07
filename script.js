@@ -31,6 +31,7 @@ const whatsappNumber = '51907283417';
 const whatsappLink = (message) => `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 const supabaseUrl = 'https://htojlbttqcggbqussdny.supabase.co';
 const supabasePublishableKey = 'sb_publishable_1OlMJBnTzARk-Rbn9U-Ayg_kMp4laPv';
+const turnstileSiteKey = '0x4AAAAAAEq47cBjcOQWdlyp';
 
 async function saveRequest(request) {
   const response = await fetch(`${supabaseUrl}/rest/v1/solicitudes`, {
@@ -409,6 +410,17 @@ if (form) {
   consent.className = 'form-consent';
   consent.innerHTML = '<input type="checkbox" required /> <span>Acepto que LUMVEA use mis datos para atender esta solicitud.</span>';
   if (submitButton) form.insertBefore(consent, submitButton);
+  const turnstile = document.createElement('div');
+  turnstile.className = 'cf-turnstile';
+  turnstile.dataset.sitekey = turnstileSiteKey;
+  if (submitButton) form.insertBefore(turnstile, submitButton);
+  if (!document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) {
+    const turnstileScript = document.createElement('script');
+    turnstileScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    turnstileScript.async = true;
+    turnstileScript.defer = true;
+    document.head.append(turnstileScript);
+  }
   if (selectedPackage || selectedTurn) {
     const selection = document.createElement('p');
     selection.className = 'form-selection';
@@ -423,8 +435,9 @@ if (form) {
       form.reportValidity();
       return;
     }
-    if (honeypot.value || !/^9\d{8}$/.test(phoneField.value.trim())) {
-      message.textContent = honeypot.value ? 'No se pudo procesar la solicitud.' : 'Ingresa un celular peruano válido de 9 dígitos que empiece con 9.';
+    const turnstileToken = form.querySelector('[name="cf-turnstile-response"]')?.value;
+    if (honeypot.value || !/^9\d{8}$/.test(phoneField.value.trim()) || !turnstileToken) {
+      message.textContent = honeypot.value ? 'No se pudo procesar la solicitud.' : !turnstileToken ? 'Completa la verificación de seguridad para continuar.' : 'Ingresa un celular peruano válido de 9 dígitos que empiece con 9.';
       return;
     }
     const turnLabel = selectedTurn === 'morning' ? 'Turno mañana' : selectedTurn === 'evening' ? 'Turno tarde / noche' : '';
