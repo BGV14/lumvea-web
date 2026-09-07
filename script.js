@@ -15,7 +15,9 @@ if (navigation) {
     { href: 'nivel.html?nivel=primaria&vista=inicio', label: 'Primaria', items: [['nivel.html?nivel=primaria&vista=inicio', 'Ver nivel'], ['nivel.html?nivel=primaria&vista=cursos', 'Cursos'], ['nivel.html?nivel=primaria&vista=horario', 'Horario'], ['nivel.html?nivel=primaria&vista=paquetes', 'Paquetes']] },
     { href: 'nivel.html?nivel=secundaria&vista=inicio', label: 'Secundaria', items: [['nivel.html?nivel=secundaria&vista=inicio', 'Ver nivel'], ['nivel.html?nivel=secundaria&vista=cursos', 'Cursos'], ['nivel.html?nivel=secundaria&vista=horario', 'Horario'], ['nivel.html?nivel=secundaria&vista=paquetes', 'Paquetes']] },
     { href: 'nivel.html?nivel=preuniversitaria&vista=inicio', label: 'Preuniversitaria', items: [['nivel.html?nivel=preuniversitaria&vista=inicio', 'Ver nivel'], ['nivel.html?nivel=preuniversitaria&vista=cursos', 'Cursos y turnos'], ['nivel.html?nivel=preuniversitaria&vista=horario', 'Bloques horarios'], ['nivel.html?nivel=preuniversitaria&vista=paquetes', 'Paquetes']] },
+    { href: 'metodo.html', label: 'Método' },
     { href: 'aula-virtual.html', label: 'Aula virtual' },
+    { href: 'inscripcion.html', label: 'Inscripción' },
   ];
   navigation.innerHTML = links.map(({ href, label, items }) => {
     const active = (href === currentPage || (selectedLevel && href.includes(`nivel=${selectedLevel}`))) ? ' class="nav-active" aria-current="page"' : '';
@@ -202,16 +204,16 @@ if (currentPage === 'nivel.html') {
     button.addEventListener('click', () => {
       document.querySelectorAll('.shift-button').forEach((item) => item.classList.toggle('is-selected', item === button));
       document.querySelectorAll('[data-time]').forEach((cell) => { cell.textContent = shiftTimes[button.dataset.shift][cell.dataset.time]; });
-      shiftContact.href = `index.html?nivel=${levelKey}&turno=${button.dataset.shift}#inscripción`;
+      shiftContact.href = `inscripcion.html?nivel=${levelKey}&turno=${button.dataset.shift}#inscripción`;
     });
   });
   document.querySelectorAll('[data-time]').forEach((cell) => { cell.textContent = shiftTimes.morning[cell.dataset.time]; });
   document.querySelectorAll('.choose-package').forEach((button) => {
     button.addEventListener('click', () => {
-      location.href = `index.html?nivel=${levelKey}&paquete=${encodeURIComponent(button.dataset.package)}#inscripción`;
+      location.href = `inscripcion.html?nivel=${levelKey}&paquete=${encodeURIComponent(button.dataset.package)}#inscripción`;
     });
   });
-  shiftContact.href = `index.html?nivel=${levelKey}&turno=morning#inscripción`;
+  shiftContact.href = `inscripcion.html?nivel=${levelKey}&turno=morning#inscripción`;
   document.querySelectorAll('.level-package-filter').forEach((filter) => {
     filter.addEventListener('click', () => {
       const type = filter.dataset.filter;
@@ -282,19 +284,8 @@ if (currentPage === 'index.html') {
     heroActions.innerHTML = '<a href="nivel.html?nivel=primaria&vista=inicio">Ver Primaria</a><a href="nivel.html?nivel=secundaria&vista=inicio">Ver Secundaria</a><a href="nivel.html?nivel=preuniversitaria&vista=inicio">Ver Preuniversitaria</a>';
   }
   if (heroFacts) heroFacts.innerHTML = '<div><dt>Niveles</dt><dd>Primaria, secundaria y preuniversitaria</dd></div><div><dt>Clases</dt><dd>En vivo</dd></div><div><dt>Modalidad</dt><dd>100% virtual</dd></div>';
-  const method = document.querySelector('.method');
-  if (method) {
-    method.insertAdjacentHTML('afterend', '<section class="level-router section"><p class="eyebrow">ELIGE TU NIVEL</p><h2>Encuentra el acompañamiento que necesitas.</h2><div><a href="nivel.html?nivel=primaria&vista=inicio"><span>01</span><strong>Primaria</strong><small>Construye bases y hábitos de estudio.</small></a><a href="nivel.html?nivel=secundaria&vista=inicio"><span>02</span><strong>Secundaria</strong><small>Refuerza, practica y gana confianza.</small></a><a href="nivel.html?nivel=preuniversitaria&vista=inicio"><span>03</span><strong>Preuniversitaria</strong><small>Prepárate con una ruta para postular.</small></a></div></section>');
-  }
-  const levelCards = [
-    ['Primaria', 'Construye bases y hábitos de estudio.', 'Matemática, comunicación, ciencias e inglés', 'Clases en vivo y material de práctica', 'Conocer Primaria'],
-    ['Secundaria', 'Refuerza, practica y gana confianza.', 'Matemática, letras, ciencias e inglés', 'Práctica guiada y seguimiento', 'Conocer Secundaria'],
-    ['Preuniversitaria', 'Prepárate con una ruta para postular.', 'Cursos por áreas y turnos flexibles', 'Simulacros y ruta de estudio', 'Conocer Preuniversitaria'],
-  ];
-  document.querySelectorAll('.level-router a').forEach((card, index) => {
-    const [title, description, detailOne, detailTwo, action] = levelCards[index];
-    card.innerHTML = `<span>0${index + 1}</span><strong>${title}</strong><p>${description}</p><ul><li>${detailOne}</li><li>${detailTwo}</li></ul><small>${action} <b>→</b></small>`;
-  });
+  document.querySelector('.method')?.remove();
+  document.querySelector('.enrollment')?.remove();
 }
 
 function showBlocks(blocks) {
@@ -377,13 +368,13 @@ if (legacyLevel) {
     if (!packageName) return;
     const button = document.createElement('a');
     button.className = 'choose-package';
-    button.href = `index.html?nivel=${legacyLevel}&paquete=${encodeURIComponent(packageName)}#inscripción`;
+    button.href = `inscripcion.html?nivel=${legacyLevel}&paquete=${encodeURIComponent(packageName)}#inscripción`;
     button.textContent = 'Elegir paquete';
     card.append(button);
   });
 }
 
-if (form) {
+if (form && form.isConnected) {
   const enrollmentParams = new URLSearchParams(location.search);
   const selectedLevel = enrollmentParams.get('nivel');
   const selectedPackage = enrollmentParams.get('paquete');
@@ -514,4 +505,7 @@ whatsappButton.setAttribute('aria-label', 'Escribir a LUMVEA por WhatsApp');
 whatsappButton.innerHTML = '<span class="whatsapp-mark" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3a8.5 8.5 0 0 0-7.3 12.85L3.5 20.5l4.77-1.16A8.5 8.5 0 1 0 12 3Zm0 15.5a7 7 0 0 1-3.35-.86l-.34-.18-2.83.69.73-2.75-.2-.36A7 7 0 1 1 12 18.5Zm3.84-5.22c-.21-.11-1.24-.61-1.43-.68-.19-.07-.33-.11-.47.11-.14.21-.54.68-.66.82-.12.14-.24.16-.45.05a5.72 5.72 0 0 1-1.68-1.04 6.3 6.3 0 0 1-1.16-1.45c-.12-.21-.01-.32.09-.42.09-.09.21-.24.31-.36.1-.12.14-.21.21-.35.07-.14.03-.26-.02-.37-.05-.11-.47-1.13-.64-1.55-.17-.4-.34-.35-.47-.36h-.4c-.14 0-.36.05-.55.26-.19.21-.72.7-.72 1.71s.74 1.98.84 2.12c.1.14 1.46 2.23 3.54 3.13.49.21.88.34 1.18.43.5.16.96.14 1.32.08.4-.06 1.24-.51 1.41-1 .17-.48.17-.9.12-.98-.05-.09-.19-.14-.4-.24Z" fill="currentColor" /></svg></span><span>WhatsApp</span>';
 document.body.append(whatsappButton);
 
+document.querySelectorAll('.site-footer p').forEach((paragraph) => {
+  if (!paragraph.querySelector('#year')) paragraph.textContent = 'Educación virtual para primaria, secundaria y preuniversitaria.';
+});
 document.querySelectorAll('#year').forEach((year) => { year.textContent = new Date().getFullYear(); });
