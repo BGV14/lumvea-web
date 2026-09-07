@@ -335,7 +335,7 @@ if (currentPage === 'nivel.html') {
       activePrice = `S/ ${activeCadence === 'weekly' ? initialPromotion.weeklyOffer : initialPromotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
     }
   }
-  if (view === 'horario' && activeCourses.length) {
+  if (view === 'horario') {
     const scheduleSummary = document.createElement('section');
     scheduleSummary.className = 'schedule-selection-summary';
     scheduleSummary.innerHTML = '<p class="schedule-selection-label">Tu selección</p><div class="schedule-selection-price" aria-live="polite"></div><div class="schedule-selection-frequency" hidden><button type="button" data-schedule-frequency="weekly">Semanal</button><button type="button" data-schedule-frequency="monthly">Mensual</button></div><a class="button button-primary" data-confirm-schedule-selection>Confirmar selección</a>';
@@ -380,6 +380,7 @@ if (currentPage === 'nivel.html') {
         frequency.hidden = true;
         confirmSelection.removeAttribute('href');
         confirmSelection.setAttribute('aria-disabled', 'true');
+        scheduleContext.hidden = !activeCourses.length;
         scheduleContext.textContent = predefinedPackage ? `Paquete actual: ${activePackage}` : 'Promoción personalizada: —';
         return;
       }
@@ -401,6 +402,7 @@ if (currentPage === 'nivel.html') {
       }
       confirmSelection.href = enrollmentUrlForShift(activeTurn);
       confirmSelection.setAttribute('aria-disabled', 'false');
+      scheduleContext.hidden = false;
       scheduleContext.textContent = predefinedPackage ? `Paquete actual: ${activePackage}` : `Promoción personalizada: ${activePrice}`;
     };
     const toggleCourse = (course) => {
