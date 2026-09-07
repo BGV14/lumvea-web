@@ -391,10 +391,13 @@ if (form) {
   }
   const contactFields = [form.querySelector('input[type="text"]'), form.querySelector('input[type="tel"]')].filter(Boolean);
   const [nameField, phoneField] = contactFields;
+  form.querySelectorAll('fieldset[disabled]').forEach((fieldset) => { fieldset.disabled = false; });
   contactFields.forEach((field) => {
     field.disabled = false;
     field.readOnly = false;
     field.removeAttribute('aria-disabled');
+    field.tabIndex = 0;
+    field.addEventListener('pointerdown', () => { field.focus(); });
   });
   if (nameField) nameField.autocomplete = 'name';
   if (phoneField) {
