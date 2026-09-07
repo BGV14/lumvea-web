@@ -104,6 +104,16 @@ serve(async (request) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count, error: limitError } = await supabase
+      .from('solicitudes')
+      .select('*', { count: 'exact', head: true })
+      .eq('celular', celular)
+      .gte('created_at', oneHourAgo);
+    if (limitError) throw limitError;
+    if ((count ?? 0) >= 3) {
+      return new Response(JSON.stringify({ error: 'Ya recibimos varias solicitudes desde este celular. Intenta nuevamente en una hora.' }), { status: 429, headers });
+    }
     const { error } = await supabase.from('solicitudes').insert({
       nombre_completo: nombreCompleto,
       celular,
