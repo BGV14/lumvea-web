@@ -45,8 +45,9 @@ async function saveRequest(request) {
     },
     body: JSON.stringify(request),
   });
-  if (!response.ok) throw new Error('No se pudo guardar la solicitud.');
-  return response.json();
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || 'No se pudo guardar la solicitud.');
+  return result;
 }
 
 document.querySelectorAll('.brand').forEach((brand) => {
@@ -789,7 +790,7 @@ if (form && form.isConnected) {
       message.textContent = 'Solicitud guardada. Abrimos WhatsApp con los datos enviados.';
       form.reset();
     } catch (error) {
-      message.textContent = 'No pudimos guardar tu solicitud. Intenta nuevamente en unos minutos.';
+      message.textContent = error instanceof Error ? error.message : 'No pudimos guardar tu solicitud. Intenta nuevamente en unos minutos.';
     }
   });
 }
