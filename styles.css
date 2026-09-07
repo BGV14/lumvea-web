@@ -125,6 +125,8 @@ a { color: inherit; text-decoration: none; }
 .form-selection { margin: 0; padding: 11px 13px; border-left: 3px solid var(--orange); background: #fff; color: var(--blue-dark); font-size: .84rem; font-weight: 600; }
 .package-contact { display: inline-block; margin-top: 12px; color: var(--blue-dark); font-size: .84rem; font-weight: 600; }
 .custom-promotion { max-width: 1184px; margin: 0 auto; padding-top: 28px; }
+.promo-rules { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.promo-rules span { padding: 8px 11px; border-left: 3px solid #b88724; background: #fff8e8; color: var(--blue-dark); font-size: .8rem; }
 .promo-course-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 24px 0; }
 .promo-course-option { display: flex; gap: 10px; min-height: 64px; padding: 13px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
 .promo-course-option:has(input:checked) { border-color: #2f7a4b; background: #ddf1e3; }
@@ -133,6 +135,11 @@ a { color: inherit; text-decoration: none; }
 .promo-course-option b { color: var(--ink); font-size: .88rem; }
 .promo-course-option small { color: var(--muted); font-size: .74rem; }
 .promo-summary { min-height: 48px; margin-bottom: 14px; padding: 13px; background: #edf4ee; color: #215a38; font-size: .88rem; }
+.promo-frequency { margin: 0 0 16px; }
+.promo-frequency p { margin: 0 0 8px; color: var(--ink); font-size: .86rem; font-weight: 600; }
+.promo-frequency > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.promo-frequency button { border: 1px solid var(--line); background: #fff; color: var(--blue-dark); padding: 10px 14px; font: 600 .84rem "Work Sans", sans-serif; }
+.promo-frequency button.is-selected { border-color: #173b76; background: #173b76; color: #fff; }
 .custom-promo-continue:disabled { cursor: not-allowed; border-color: #c8d1c9; background: #c8d1c9; color: #fff; }
 .form-consent { display: flex; align-items: flex-start; gap: 9px; color: var(--muted); font-size: .78rem; line-height: 1.45; cursor: pointer; }
 .form-consent input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--blue); }
