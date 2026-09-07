@@ -8,14 +8,19 @@ let timeout, warningTimeout, countdown;
 let adminState = { view: 'usuarios', courseLevel: 'all', currentUserId: '', profiles: [], courses: [], enrollments: [], teachings: [] };
 
 function addGlobalNav() {
-  document.querySelector('.aula-header')?.remove();
+  document.querySelector('.aula-public-header')?.remove();
   const header = document.createElement('header');
-  header.className = 'site-header aula-header';
-  header.innerHTML = '<a href="../index.html"><img src="../assets/logos/lumvea-header.png" alt="LUMVEA Educación" /></a><button type="button" aria-expanded="false" aria-controls="public-navigation">Menú</button><nav id="public-navigation"><a href="../index.html">Inicio</a><a href="../programas.html">Programas</a><a href="../nivel.html">Horarios</a><a href="../metodo.html">Método</a><a href="../aula/">Aula virtual</a><a href="../inscripcion.html">Inscripción</a></nav>';
+  header.className = 'site-header aula-public-header';
+  header.innerHTML = '<a class="brand-logo" href="../index.html"><img src="../assets/logos/lumvea-header.png" alt="LUMVEA Educación" /></a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Abrir menu</span><span aria-hidden="true">Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Navegacion principal"><a href="../index.html">Inicio</a><a href="../programas.html">Programas</a><a href="../nivel.html">Horarios</a><a href="../metodo.html">Método</a><a class="nav-active" href="../aula/">Aula virtual</a><a href="../inscripcion.html">Inscripción</a></nav>';
   header.querySelector('button').addEventListener('click', () => {
-    const open = header.classList.toggle('is-open');
+    const navigation = header.querySelector('.site-nav');
+    const open = navigation.classList.toggle('is-open');
     header.querySelector('button').setAttribute('aria-expanded', String(open));
   });
+  header.querySelectorAll('.site-nav a').forEach((link) => link.addEventListener('click', () => {
+    header.querySelector('.site-nav').classList.remove('is-open');
+    header.querySelector('button').setAttribute('aria-expanded', 'false');
+  }));
   document.body.prepend(header);
 }
 
@@ -81,7 +86,7 @@ function setSubmitting(form, submitting) {
 async function loadAdminData() {
   const [profiles, courses, enrollments, teachings] = await Promise.all([
     supabase.from('perfiles').select('id, nombre_completo, rol, created_at').order('nombre_completo'),
-    supabase.from('cursos_aula').select('id, codigo, titulo, nivel, descripcion, created_at').order('titulo'),
+    supabase.from('cursos_aula').select('id, codigo, titulo, nivel, descripcion, es_oficial, created_at').order('titulo'),
     supabase.from('matriculas_aula').select('estudiante_id, curso_id, estado, created_at').order('created_at', { ascending: false }),
     supabase.from('docencias_aula').select('docente_id, curso_id, created_at').order('created_at', { ascending: false }),
   ]);
@@ -106,7 +111,9 @@ function adminCoursesView() {
   const teachingByCourse = new Map();
   adminState.teachings.forEach((teaching) => teachingByCourse.set(teaching.curso_id, [...(teachingByCourse.get(teaching.curso_id) || []), teacherNames.get(teaching.docente_id) || 'Docente sin nombre']));
   const levels = [['primaria', 'Primaria'], ['secundaria', 'Secundaria'], ['preuniversitaria', 'Preuniversitaria']];
-  const visibleCourses = adminState.courses.filter((course) => adminState.courseLevel === 'all' || course.nivel === adminState.courseLevel);
+  const officialCourses = adminState.courses.filter((course) => course.es_oficial);
+  const customCourses = adminState.courses.filter((course) => !course.es_oficial);
+  const visibleCourses = officialCourses.filter((course) => adminState.courseLevel === 'all' || course.nivel === adminState.courseLevel);
   const groups = levels.map(([level, label]) => {
     const courses = visibleCourses.filter((course) => course.nivel === level);
     if (!courses.length) return '';
@@ -114,7 +121,8 @@ function adminCoursesView() {
     return `<section class="course-group" aria-labelledby="${level}-courses"><div class="course-group-heading"><h3 id="${level}-courses">${label}</h3><span>${courses.length} cursos</span></div><div class="table-wrap"><table><caption class="sr-only">Cursos oficiales de ${label} y docentes asignados</caption><thead><tr><th scope="col">Curso</th><th scope="col">Docentes</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
   }).join('') || '<p class="empty-state">No hay cursos oficiales para este nivel.</p>';
   const filters = [['all', 'Todos'], ...levels].map(([level, label]) => `<button type="button" class="course-filter${adminState.courseLevel === level ? ' is-selected' : ''}" data-course-level="${level}" aria-pressed="${adminState.courseLevel === level}">${label}</button>`).join('');
-  return `<section class="admin-view" id="cursos-panel" aria-labelledby="cursos-tab"><section class="admin-surface"><div class="section-heading"><div><p class="eyebrow">CATÁLOGO OFICIAL</p><h2>Cursos</h2><p class="muted">Oferta académica oficial disponible para matrículas y asignaciones docentes.</p></div><p class="record-count">${adminState.courses.length} cursos</p></div><div class="course-filters" role="group" aria-label="Filtrar cursos por nivel">${filters}</div><div class="course-groups">${groups}</div></section></section>`;
+  const customRows = customCourses.map((course) => `<tr><td><strong>${escapeHtml(course.titulo)}</strong><span class="table-subtle">${escapeHtml(course.codigo)}</span></td><td>${escapeHtml(course.nivel)}</td><td>${escapeHtml(course.descripcion || 'Sin descripción')}</td></tr>`).join('') || '<tr><td colspan="3" class="empty-state">Aún no hay cursos personalizados.</td></tr>';
+  return `<section class="admin-view" id="cursos-panel" aria-labelledby="cursos-tab"><div class="admin-layout"><div><section class="admin-surface"><div class="section-heading"><div><p class="eyebrow">CATÁLOGO OFICIAL</p><h2>Cursos</h2><p class="muted">Oferta académica oficial disponible para matrículas y asignaciones docentes.</p></div><p class="record-count">${officialCourses.length} cursos</p></div><div class="course-filters" role="group" aria-label="Filtrar cursos oficiales por nivel">${filters}</div><div class="course-groups">${groups}</div></section><section class="admin-surface custom-courses"><div class="section-heading"><div><p class="eyebrow">CURSOS PERSONALIZADOS</p><h2>Oferta creada por administración</h2></div><p class="record-count">${customCourses.length} cursos</p></div><div class="table-wrap"><table><caption class="sr-only">Cursos personalizados del aula</caption><thead><tr><th scope="col">Curso</th><th scope="col">Nivel</th><th scope="col">Descripción</th></tr></thead><tbody>${customRows}</tbody></table></div></section></div><section class="admin-surface form-surface"><p class="eyebrow">NUEVO CURSO</p><h2>Crear curso personalizado</h2><p class="muted">Se añade a las matrículas y asignaciones sin modificar el catálogo oficial.</p><form data-admin-form="course"><label>Código<input name="codigo" maxlength="40" required><span class="field-hint">Usa un código único, por ejemplo: MAT-REF-01.</span></label><label>Título<input name="titulo" maxlength="160" required></label><label>Nivel<select name="nivel" required>${levels.map(([level, label]) => `<option value="${level}">${label}</option>`).join('')}</select></label><label>Descripción <span class="optional">opcional</span><textarea name="descripcion" rows="4" maxlength="600"></textarea></label><button class="primary" type="submit">Crear curso</button></form></section></div></section>`;
 }
 
 function adminAssignmentsView() {
@@ -188,6 +196,7 @@ function bindAdminEvents(session, name) {
     let message;
     if (form.dataset.adminForm === 'user') ({ error } = await supabase.functions.invoke('admin-aula', { body: values }), message = 'Usuario creado correctamente.');
     if (form.dataset.adminForm === 'profile') ({ error } = await supabase.from('perfiles').update({ rol: values.rol }).eq('id', values.id), message = 'Rol actualizado.');
+    if (form.dataset.adminForm === 'course') ({ error } = await supabase.from('cursos_aula').insert({ ...values, descripcion: values.descripcion || null, es_oficial: false }), message = 'Curso personalizado creado.');
     if (form.dataset.adminForm === 'enrollment') ({ error } = await supabase.from('matriculas_aula').upsert(values, { onConflict: 'estudiante_id,curso_id' }), message = 'Matrícula guardada.');
     if (form.dataset.adminForm === 'teaching') ({ error } = await supabase.from('docencias_aula').upsert(values, { onConflict: 'docente_id,curso_id' }), message = 'Docencia guardada.');
     if (error) {
@@ -207,7 +216,7 @@ async function adminDashboard(session, profile) {
 }
 
 async function dashboard(session) {
-  document.querySelector('.aula-header')?.remove();
+  document.querySelector('.aula-public-header')?.remove();
   const userId = session.user.id;
   const [{ data: profile }, { data: enrollments }, { data: sessions }, { data: materials }] = await Promise.all([
     supabase.from('perfiles').select('nombre_completo, rol').eq('id', userId).single(),
