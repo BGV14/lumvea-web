@@ -16,6 +16,7 @@ input { min-height:48px; padding:10px 12px; border:1px solid var(--line); color:
 input:focus,button:focus-visible,a:focus-visible { outline:3px solid #f8b596; outline-offset:2px; }
 .primary { min-height:48px; border:0; background:var(--orange); color:white; font-weight:700; }
 .error { color:#b42318; min-height:22px; font-size:.9rem; }
+.session-warning { position:fixed; z-index:50; right:24px; bottom:24px; width:min(360px,calc(100% - 32px)); padding:20px; background:var(--blue); color:#fff; box-shadow:0 16px 34px rgba(16,33,61,.28); }.session-warning p { margin:0 0 14px; }.session-warning button { min-height:42px; border:0; padding:0 14px; background:var(--orange); color:#fff; font-weight:700; }
 .shell { display:grid; grid-template-columns:245px minmax(0,1fr); min-height:100vh; }
 aside { position:sticky; top:0; height:100vh; display:flex; flex-direction:column; background:var(--blue); color:white; padding:28px 20px; }
 .nav-title { margin:54px 0 14px; color:#bcd0e8; font-size:.75rem; letter-spacing:.12em; }

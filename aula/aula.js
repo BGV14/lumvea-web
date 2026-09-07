@@ -3,8 +3,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const supabase = createClient('https://htojlbttqcggbqussdny.supabase.co', 'sb_publishable_1OlMJBnTzARk-Rbn9U-Ayg_kMp4laPv');
 const app = document.querySelector('#app');
 const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (character) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[character]);
+let timeout, warningTimeout;
+function addGlobalNav() { const nav = document.createElement('nav'); nav.className = 'site-links'; nav.innerHTML = '<a href="../index.html">Inicio</a><a href="../programas.html">Programas</a><a href="../nivel.html">Horarios</a><a href="../metodo.html">Método</a><a href="../aula/">Aula virtual</a><a href="../inscripcion.html">Inscripción</a>'; document.body.prepend(nav); }
+function protectSession() { clearTimeout(timeout); clearTimeout(warningTimeout); document.querySelector('#session-warning')?.remove(); warningTimeout = setTimeout(() => { const warning = document.createElement('div'); warning.id = 'session-warning'; warning.className = 'session-warning'; warning.innerHTML = '<p>Tu sesión cerrará en 30 segundos por inactividad.</p><button type="button">Extender sesión</button>'; warning.querySelector('button').addEventListener('click', protectSession); document.body.append(warning); }, 150000); timeout = setTimeout(() => supabase.auth.signOut(), 180000); }
 
 function login() {
+  addGlobalNav();
   app.innerHTML = `<section class="login"><div class="login-card"><div class="wordmark">LUMVEA EDUCACIÓN</div><h1>Tu aula virtual.</h1><p class="muted">Ingresa con las credenciales entregadas por LUMVEA.</p><form id="login-form"><label>Correo electrónico<input name="email" type="email" autocomplete="email" required /></label><label>Contraseña<input name="password" type="password" autocomplete="current-password" required /></label><p class="error" id="login-error"></p><button class="primary" type="submit">Ingresar al aula</button></form></div></section>`;
   document.querySelector('#login-form').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -16,6 +20,7 @@ function login() {
 }
 
 async function dashboard(session) {
+  addGlobalNav();
   const userId = session.user.id;
   const [{ data: profile }, { data: enrollments }, { data: sessions }, { data: materials }] = await Promise.all([
     supabase.from('perfiles').select('nombre_completo, rol').eq('id', userId).single(),
