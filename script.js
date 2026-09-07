@@ -201,10 +201,6 @@ if (currentPage === 'nivel.html') {
     const link = card.querySelector('a');
     link.href = `${base}&vista=paquetes&curso=${encodeURIComponent(title)}&origen=curso`;
     link.textContent = 'Ver paquetes relacionados';
-    const courseContact = document.createElement('a');
-    courseContact.href = `inscripcion.html?${new URLSearchParams({ origen: 'curso', nivel: levelKey, curso: title })}#inscripción`;
-    courseContact.textContent = 'Consultar este curso';
-    card.append(courseContact);
   });
   if (view === 'inicio') {
     const levelContact = document.createElement('a');
