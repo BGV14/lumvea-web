@@ -5,7 +5,7 @@ const app = document.querySelector('#app');
 const roles = ['estudiante', 'docente', 'administrador'];
 const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
 let timeout, warningTimeout, countdown;
-let adminState = { view: 'usuarios', currentUserId: '', profiles: [], courses: [], enrollments: [], teachings: [] };
+let adminState = { view: 'usuarios', courseLevel: 'all', currentUserId: '', profiles: [], courses: [], enrollments: [], teachings: [] };
 
 function addGlobalNav() {
   document.querySelector('.aula-header')?.remove();
@@ -105,8 +105,16 @@ function adminCoursesView() {
   const teacherNames = new Map(teachers.map((teacher) => [teacher.id, teacher.nombre_completo || 'Sin nombre']));
   const teachingByCourse = new Map();
   adminState.teachings.forEach((teaching) => teachingByCourse.set(teaching.curso_id, [...(teachingByCourse.get(teaching.curso_id) || []), teacherNames.get(teaching.docente_id) || 'Docente sin nombre']));
-  const rows = adminState.courses.map((course) => `<tr><td><strong>${escapeHtml(course.titulo)}</strong><span class="table-subtle">${escapeHtml(course.codigo)} · ${escapeHtml(course.nivel)}</span></td><td>${escapeHtml((teachingByCourse.get(course.id) || []).join(', ') || 'Sin docente asignado')}</td></tr>`).join('') || '<tr><td colspan="2" class="empty-state">Aún no hay cursos creados.</td></tr>';
-  return `<section class="admin-view" id="cursos-panel" aria-labelledby="cursos-tab"><div class="admin-layout"><section class="admin-surface"><div class="section-heading"><div><p class="eyebrow">OFERTA ACADÉMICA</p><h2>Cursos</h2><p class="muted">Consulta los cursos y los docentes que los acompañan.</p></div><p class="record-count">${adminState.courses.length} cursos</p></div><div class="table-wrap"><table><caption class="sr-only">Cursos y docentes asignados</caption><thead><tr><th scope="col">Curso</th><th scope="col">Docentes</th></tr></thead><tbody>${rows}</tbody></table></div></section><section class="admin-surface form-surface"><p class="eyebrow">NUEVO CURSO</p><h2>Crear curso</h2><form data-admin-form="course"><label>Código<input name="codigo" maxlength="30" required></label><label>Nombre del curso<input name="titulo" required></label><label>Nivel<select name="nivel"><option value="primaria">Primaria</option><option value="secundaria">Secundaria</option><option value="preuniversitaria">Preuniversitaria</option></select></label><label>Descripción <span class="optional">opcional</span><textarea name="descripcion" rows="3"></textarea></label><button class="primary" type="submit">Crear curso</button></form></section></div></section>`;
+  const levels = [['primaria', 'Primaria'], ['secundaria', 'Secundaria'], ['preuniversitaria', 'Preuniversitaria']];
+  const visibleCourses = adminState.courses.filter((course) => adminState.courseLevel === 'all' || course.nivel === adminState.courseLevel);
+  const groups = levels.map(([level, label]) => {
+    const courses = visibleCourses.filter((course) => course.nivel === level);
+    if (!courses.length) return '';
+    const rows = courses.map((course) => `<tr><td><strong>${escapeHtml(course.titulo)}</strong><span class="table-subtle">${escapeHtml(course.codigo)}</span></td><td>${escapeHtml((teachingByCourse.get(course.id) || []).join(', ') || 'Sin docente asignado')}</td></tr>`).join('');
+    return `<section class="course-group" aria-labelledby="${level}-courses"><div class="course-group-heading"><h3 id="${level}-courses">${label}</h3><span>${courses.length} cursos</span></div><div class="table-wrap"><table><caption class="sr-only">Cursos oficiales de ${label} y docentes asignados</caption><thead><tr><th scope="col">Curso</th><th scope="col">Docentes</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+  }).join('') || '<p class="empty-state">No hay cursos oficiales para este nivel.</p>';
+  const filters = [['all', 'Todos'], ...levels].map(([level, label]) => `<button type="button" class="course-filter${adminState.courseLevel === level ? ' is-selected' : ''}" data-course-level="${level}" aria-pressed="${adminState.courseLevel === level}">${label}</button>`).join('');
+  return `<section class="admin-view" id="cursos-panel" aria-labelledby="cursos-tab"><section class="admin-surface"><div class="section-heading"><div><p class="eyebrow">CATÁLOGO OFICIAL</p><h2>Cursos</h2><p class="muted">Oferta académica oficial disponible para matrículas y asignaciones docentes.</p></div><p class="record-count">${adminState.courses.length} cursos</p></div><div class="course-filters" role="group" aria-label="Filtrar cursos por nivel">${filters}</div><div class="course-groups">${groups}</div></section></section>`;
 }
 
 function adminAssignmentsView() {
@@ -116,7 +124,10 @@ function adminAssignmentsView() {
   const courses = new Map(adminState.courses.map((course) => [course.id, `${course.codigo} · ${course.titulo}`]));
   const enrollmentRows = adminState.enrollments.map((enrollment) => `<tr><td>${escapeHtml(people.get(enrollment.estudiante_id) || 'Estudiante no disponible')}</td><td>${escapeHtml(courses.get(enrollment.curso_id) || 'Curso no disponible')}</td><td><span class="status-badge">${escapeHtml(enrollment.estado)}</span></td><td><button class="text-button danger" type="button" data-admin-action="remove-enrollment" data-student-id="${escapeHtml(enrollment.estudiante_id)}" data-course-id="${escapeHtml(enrollment.curso_id)}">Retirar</button></td></tr>`).join('') || '<tr><td colspan="4" class="empty-state">No hay matrículas registradas.</td></tr>';
   const teachingRows = adminState.teachings.map((teaching) => `<tr><td>${escapeHtml(people.get(teaching.docente_id) || 'Docente no disponible')}</td><td>${escapeHtml(courses.get(teaching.curso_id) || 'Curso no disponible')}</td><td><button class="text-button danger" type="button" data-admin-action="remove-teaching" data-teacher-id="${escapeHtml(teaching.docente_id)}" data-course-id="${escapeHtml(teaching.curso_id)}">Retirar</button></td></tr>`).join('') || '<tr><td colspan="3" class="empty-state">No hay docencias registradas.</td></tr>';
-  const courseOptions = optionList(adminState.courses, (course) => `${course.codigo} · ${course.titulo}`) || '<option value="">Primero crea un curso</option>';
+  const courseOptions = ['primaria', 'secundaria', 'preuniversitaria'].map((level) => {
+    const coursesForLevel = adminState.courses.filter((course) => course.nivel === level);
+    return coursesForLevel.length ? `<optgroup label="${escapeHtml(level[0].toUpperCase() + level.slice(1))}">${optionList(coursesForLevel, (course) => `${course.codigo} · ${course.titulo}`)}</optgroup>` : '';
+  }).join('') || '<option value="">No hay cursos oficiales disponibles</option>';
   return `<section class="admin-view" id="asignaciones-panel" aria-labelledby="asignaciones-tab"><div class="assignment-forms"><section class="admin-surface form-surface"><p class="eyebrow">MATRÍCULA</p><h2>Asignar estudiante</h2><form data-admin-form="enrollment"><label>Estudiante<select name="estudiante_id" required ${students.length ? '' : 'disabled'}><option value="">Selecciona una persona</option>${optionList(students, (student) => student.nombre_completo || 'Sin nombre')}</select></label><label>Curso<select name="curso_id" required ${adminState.courses.length ? '' : 'disabled'}><option value="">Selecciona un curso</option>${courseOptions}</select></label><label>Estado<select name="estado"><option value="activa">Activa</option><option value="pausada">Pausada</option><option value="finalizada">Finalizada</option></select></label><button class="primary" type="submit" ${students.length && adminState.courses.length ? '' : 'disabled'}>Guardar matrícula</button></form></section><section class="admin-surface form-surface"><p class="eyebrow">DOCENCIA</p><h2>Asignar docente</h2><form data-admin-form="teaching"><label>Docente<select name="docente_id" required ${teachers.length ? '' : 'disabled'}><option value="">Selecciona una persona</option>${optionList(teachers, (teacher) => teacher.nombre_completo || 'Sin nombre')}</select></label><label>Curso<select name="curso_id" required ${adminState.courses.length ? '' : 'disabled'}><option value="">Selecciona un curso</option>${courseOptions}</select></label><button class="primary" type="submit" ${teachers.length && adminState.courses.length ? '' : 'disabled'}>Guardar docencia</button></form></section></div><div class="assignment-lists"><section class="admin-surface"><div class="section-heading"><div><p class="eyebrow">MATRÍCULAS ACTIVAS E HISTÓRICAS</p><h2>Estudiantes por curso</h2></div></div><div class="table-wrap"><table><caption class="sr-only">Matrículas del aula</caption><thead><tr><th>Estudiante</th><th>Curso</th><th>Estado</th><th><span class="sr-only">Acciones</span></th></tr></thead><tbody>${enrollmentRows}</tbody></table></div></section><section class="admin-surface"><div class="section-heading"><div><p class="eyebrow">DOCENCIAS</p><h2>Docentes por curso</h2></div></div><div class="table-wrap"><table><caption class="sr-only">Docencias del aula</caption><thead><tr><th>Docente</th><th>Curso</th><th><span class="sr-only">Acciones</span></th></tr></thead><tbody>${teachingRows}</tbody></table></div></section></div></section>`;
 }
 
@@ -148,6 +159,12 @@ function bindAdminEvents(session, name) {
       renderAdmin(session, name);
       return;
     }
+    const courseLevel = event.target.closest('[data-course-level]');
+    if (courseLevel) {
+      adminState.courseLevel = courseLevel.dataset.courseLevel;
+      renderAdmin(session, name);
+      return;
+    }
     const action = event.target.closest('[data-admin-action]');
     if (!action) return;
     action.disabled = true;
@@ -171,7 +188,6 @@ function bindAdminEvents(session, name) {
     let message;
     if (form.dataset.adminForm === 'user') ({ error } = await supabase.functions.invoke('admin-aula', { body: values }), message = 'Usuario creado correctamente.');
     if (form.dataset.adminForm === 'profile') ({ error } = await supabase.from('perfiles').update({ rol: values.rol }).eq('id', values.id), message = 'Rol actualizado.');
-    if (form.dataset.adminForm === 'course') ({ error } = await supabase.from('cursos_aula').insert({ ...values, descripcion: values.descripcion || null }), message = 'Curso creado correctamente.');
     if (form.dataset.adminForm === 'enrollment') ({ error } = await supabase.from('matriculas_aula').upsert(values, { onConflict: 'estudiante_id,curso_id' }), message = 'Matrícula guardada.');
     if (form.dataset.adminForm === 'teaching') ({ error } = await supabase.from('docencias_aula').upsert(values, { onConflict: 'docente_id,curso_id' }), message = 'Docencia guardada.');
     if (error) {
