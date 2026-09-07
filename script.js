@@ -73,6 +73,7 @@ document.querySelectorAll('.nav-dropdown button').forEach((button) => {
 
 document.querySelectorAll('.nav-dropdown').forEach((dropdown) => {
   dropdown.addEventListener('mouseleave', () => {
+    if (window.matchMedia('(max-width: 820px)').matches) return;
     dropdown.classList.remove('is-open');
     dropdown.querySelectorAll('button').forEach((button) => button.setAttribute('aria-expanded', 'false'));
     if (dropdown.contains(document.activeElement)) document.activeElement.blur();
