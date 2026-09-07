@@ -358,13 +358,16 @@ if (currentPage === 'nivel.html') {
     const renderSelectionSummary = () => {
       const promotion = calculatePromotion(activeCourses);
       if (!promotion.valid) {
+        activePrice = '';
         priceSummary.textContent = activeCourses.length ? `${promotion.blocks} bloques seleccionados. Agrega cursos hasta llegar a 3 bloques para activar la promoción.` : 'Selecciona al menos un curso.';
         frequency.hidden = true;
         applySelection.disabled = true;
+        document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage} · Cursos: ${activeCourses.join(', ') || 'ninguno'}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
         return;
       }
       if (activeCourses.length === 1) {
         activeCadence = 'monthly';
+        activePrice = `S/ ${promotion.monthlyOffer} / mes`;
         frequency.hidden = true;
         priceSummary.innerHTML = `<b>${promotion.blocks} ${promotion.blocks === 1 ? 'bloque' : 'bloques'} seleccionado${promotion.blocks === 1 ? '' : 's'}.</b> Mensual: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer} (3 semanas).`;
       } else {
@@ -376,11 +379,14 @@ if (currentPage === 'nivel.html') {
           button.textContent = button.dataset.scheduleFrequency === 'weekly' ? `Semanal · S/ ${promotion.weeklyOffer}` : `Mensual · S/ ${promotion.monthlyOffer}`;
         });
         priceSummary.innerHTML = `<b>${promotion.blocks} bloques seleccionados.</b> Semana: <del>S/ ${promotion.weeklyRegular}</del> S/ ${promotion.weeklyOffer} · Mes: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer}.`;
+        activePrice = `S/ ${activeCadence === 'weekly' ? promotion.weeklyOffer : promotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
       }
       applySelection.disabled = false;
+      document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage} · Cursos: ${activeCourses.join(', ')} · ${activeCadence === 'weekly' ? 'Promoción semanal' : 'Promoción mensual'} · ${activePrice}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
     };
     const toggleCourse = (course) => {
       activeCourses = activeCourses.includes(course) ? activeCourses.filter((title) => title !== course) : [...activeCourses, course];
+      activePackage = 'Promoción personalizada';
       updateScheduleSelection();
       renderSelectionSummary();
       applySelection.textContent = 'Aplicar selección';
