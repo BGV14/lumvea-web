@@ -156,6 +156,7 @@ a { color: inherit; text-decoration: none; }
 .schedule-selection-label { margin: 0; color: #215a38; font: 600 .8rem "Outfit", sans-serif; text-transform: uppercase; letter-spacing: .06em; }
 .schedule-selection-price { flex: 1 1 360px; color: #215a38; font-size: .84rem; }
 .schedule-selection-frequency { display: flex; flex-wrap: wrap; gap: 6px; }
+.schedule-selection-frequency[hidden], .promo-frequency[hidden] { display: none; }
 .schedule-selection-frequency button { border: 1px solid #173b76; background: #fff; color: var(--blue-dark); padding: 8px 10px; font: 600 .76rem "Work Sans", sans-serif; cursor: pointer; }
 .schedule-selection-frequency button.is-selected { background: #173b76; color: #fff; }
 .schedule-selection-summary [data-confirm-schedule-selection] { min-height: 38px; padding: 8px 12px; font-size: .8rem; }
