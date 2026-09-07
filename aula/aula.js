@@ -30,6 +30,17 @@ async function dashboard(session) {
   const date = next ? new Intl.DateTimeFormat('es-PE', { dateStyle:'full', timeStyle:'short' }).format(new Date(next.inicia_en)) : 'Aún no tienes clases programadas.';
   app.innerHTML = `<div class="shell"><aside><div class="wordmark">LUMVEA AULA</div><p class="nav-title">ESPACIO DE ${roleLabel}</p><a class="nav-item" href="#inicio">${role === 'administrador' ? 'Panel administrativo' : 'Mi inicio'}</a><button class="signout" id="signout">Cerrar sesión</button></aside><main class="content" id="inicio"><header class="topbar"><div><p class="eyebrow">${role === 'administrador' ? 'ADMINISTRACIÓN DEL AULA' : 'MI APRENDIZAJE'}</p><h1>Hola, ${escapeHtml(name)}.</h1><p class="muted">${role === 'administrador' ? 'Gestiona usuarios, cursos y asignaciones.' : 'Aquí encontrarás tus clases y materiales asignados.'}</p></div><p class="user">Sesión de ${roleLabel.toLowerCase()}<br>${escapeHtml(session.user.email)}</p></header><section class="grid"><article class="card next"><p class="label">PRÓXIMA CLASE</p><div class="session"><div><h2>${escapeHtml(next?.titulo || 'Sin clases próximas')}</h2><p class="muted">${escapeHtml(next?.cursos_aula?.titulo || '')}<br>${date}</p></div>${next?.enlace_clase ? `<a class="action" href="${escapeHtml(next.enlace_clase)}" target="_blank" rel="noopener">Ingresar a clase</a>` : ''}</div></article><article class="card courses"><p class="label">MIS CURSOS</p><ul>${enrollments?.length ? enrollments.map(({ cursos_aula: course }) => `<li><strong>${escapeHtml(course.titulo)}</strong><br><span class="muted">${escapeHtml(course.codigo)} · ${escapeHtml(course.docente || 'Docente por asignar')}</span></li>`).join('') : '<li class="muted">Aún no tienes cursos asignados.</li>'}</ul></article><article class="card materials"><p class="label">MATERIALES RECIENTES</p><ul>${materials?.length ? materials.map((material) => `<li><span class="tag">${escapeHtml(material.tipo)}</span><br><a href="${escapeHtml(material.enlace)}" target="_blank" rel="noopener">${escapeHtml(material.titulo)}</a><span class="muted"> · ${escapeHtml(material.cursos_aula?.titulo || '')}</span></li>`).join('') : '<li class="muted">Los materiales aparecerán aquí cuando tu docente los publique.</li>'}</ul></article></section></main></div>`;
   document.querySelector('#signout').addEventListener('click', () => supabase.auth.signOut());
+  const sidebar = document.querySelector('aside');
+  const menuButton = document.createElement('button');
+  menuButton.className = 'nav-toggle';
+  menuButton.type = 'button';
+  menuButton.textContent = 'Menú';
+  menuButton.setAttribute('aria-expanded', 'false');
+  document.body.append(menuButton);
+  menuButton.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('is-open');
+    menuButton.setAttribute('aria-expanded', String(open));
+  });
 }
 
 async function render() { const { data: { session } } = await supabase.auth.getSession(); if (session) dashboard(session); else login(); }
