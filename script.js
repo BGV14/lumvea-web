@@ -330,68 +330,85 @@ if (currentPage === 'nivel.html') {
       activePrice = `S/ ${activeCadence === 'weekly' ? initialPromotion.weeklyOffer : initialPromotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
     }
   }
-  const updateScheduleHighlight = () => {
-    const activeCourseNames = new Set(activeCourses.map(normalizeCourse));
-    document.querySelectorAll('.level-table td').forEach((cell) => {
-      const subject = cell.textContent.trim();
-      if (!subject || subject === '-' || subject === 'Receso') return;
-      const included = activeCourseNames.has(normalizeCourse(subject));
-      cell.classList.toggle('is-package-subject', included);
-      cell.classList.toggle('is-package-excluded', !included);
-      cell.setAttribute('aria-label', `${subject}: ${included ? 'incluido en tu selección' : 'no incluido en tu selección'}`);
-    });
-  };
   if (view === 'horario' && activeCourses.length) {
-    const packageLegend = document.createElement('p');
-    packageLegend.className = 'schedule-package-legend';
-    packageLegend.innerHTML = '<span class="schedule-key schedule-key-included">Incluido en tu selección</span><span class="schedule-key schedule-key-excluded">No incluido en tu selección</span>';
-    document.querySelector('.schedule-hint')?.after(packageLegend);
-    updateScheduleHighlight();
-  }
-  if (view === 'horario' && activeCourses.length) {
-    const selectionEditor = document.createElement('section');
-    selectionEditor.className = 'schedule-selection-editor';
-    selectionEditor.innerHTML = `<h3>Editar cursos y promoción</h3><p>Agrega o retira cursos. Luego aplica la selección para actualizar el horario y la inscripción.</p><div class="promo-course-grid">${level.courses.map(([title, area, blocks]) => `<label class="promo-course-option"><input type="checkbox" data-schedule-course value="${title}"${activeCourses.includes(title) ? ' checked' : ''} /><span><b>${title}</b><small>${area} · ${blocks} ${blocks === 1 ? 'bloque' : 'bloques'}</small></span></label>`).join('')}</div><div class="schedule-price" aria-live="polite"></div><div class="schedule-frequency" hidden><button type="button" data-schedule-frequency="weekly">Promoción semanal</button><button type="button" data-schedule-frequency="monthly">Promoción mensual</button></div><button class="button button-primary" type="button" data-apply-schedule-selection>Aplicar selección al horario</button>`;
-    document.querySelector('.shift-switch')?.before(selectionEditor);
-    const priceSummary = selectionEditor.querySelector('.schedule-price');
-    const frequency = selectionEditor.querySelector('.schedule-frequency');
-    const renderSelectionPrice = () => {
-      const pendingCourses = Array.from(selectionEditor.querySelectorAll('[data-schedule-course]:checked')).map((input) => input.value);
-      const promotion = calculatePromotion(pendingCourses);
+    const scheduleSummary = document.createElement('section');
+    scheduleSummary.className = 'schedule-selection-summary';
+    scheduleSummary.innerHTML = '<p class="schedule-selection-label">Tu selección</p><div class="schedule-selection-price" aria-live="polite"></div><div class="schedule-selection-frequency" hidden><button type="button" data-schedule-frequency="weekly">Semanal</button><button type="button" data-schedule-frequency="monthly">Mensual</button></div><button class="button button-primary" type="button" data-apply-schedule-selection>Aplicar selección</button>';
+    document.querySelector('.schedule-hint')?.after(scheduleSummary);
+    const priceSummary = scheduleSummary.querySelector('.schedule-selection-price');
+    const frequency = scheduleSummary.querySelector('.schedule-selection-frequency');
+    const applySelection = scheduleSummary.querySelector('[data-apply-schedule-selection]');
+    const courseForSubject = (subject) => level.courses.find(([course]) => normalizeCourse(course) === normalizeCourse(subject))?.[0];
+    const updateScheduleSelection = () => {
+      const selectedCourseNames = new Set(activeCourses.map(normalizeCourse));
+      document.querySelectorAll('.level-table td').forEach((cell) => {
+        const subject = cell.textContent.trim();
+        const course = courseForSubject(subject);
+        if (!course) return;
+        const selected = selectedCourseNames.has(normalizeCourse(course));
+        cell.classList.toggle('is-package-subject', selected);
+        cell.classList.toggle('is-package-excluded', !selected);
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('tabindex', '0');
+        cell.setAttribute('aria-pressed', String(selected));
+        cell.setAttribute('aria-label', `${course}: ${selected ? 'seleccionado' : 'no seleccionado'}`);
+      });
+    };
+    const renderSelectionSummary = () => {
+      const promotion = calculatePromotion(activeCourses);
       if (!promotion.valid) {
-        priceSummary.textContent = pendingCourses.length ? `Esta combinación suma ${promotion.blocks} bloques. Agrega cursos hasta llegar a 3 bloques para activar una promoción.` : 'Selecciona al menos un curso.';
+        priceSummary.textContent = activeCourses.length ? `${promotion.blocks} bloques seleccionados. Agrega cursos hasta llegar a 3 bloques para activar la promoción.` : 'Selecciona al menos un curso.';
         frequency.hidden = true;
-        selectionEditor.querySelector('[data-apply-schedule-selection]').disabled = true;
+        applySelection.disabled = true;
         return;
       }
-      if (pendingCourses.length === 1) {
+      if (activeCourses.length === 1) {
         activeCadence = 'monthly';
-        priceSummary.innerHTML = `<b>Promoción mensual:</b> <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer} (3 semanas regulares).`;
         frequency.hidden = true;
+        priceSummary.innerHTML = `<b>${promotion.blocks} ${promotion.blocks === 1 ? 'bloque' : 'bloques'} seleccionado${promotion.blocks === 1 ? '' : 's'}.</b> Mensual: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer} (3 semanas).`;
       } else {
         frequency.hidden = false;
         frequency.querySelectorAll('button').forEach((button) => {
-          const isCurrent = button.dataset.scheduleFrequency === activeCadence;
-          button.classList.toggle('is-selected', isCurrent);
-          button.setAttribute('aria-pressed', String(isCurrent));
-          button.textContent = button.dataset.scheduleFrequency === 'weekly' ? `Promoción semanal · S/ ${promotion.weeklyOffer}` : `Promoción mensual · S/ ${promotion.monthlyOffer}`;
+          const selected = button.dataset.scheduleFrequency === activeCadence;
+          button.classList.toggle('is-selected', selected);
+          button.setAttribute('aria-pressed', String(selected));
+          button.textContent = button.dataset.scheduleFrequency === 'weekly' ? `Semanal · S/ ${promotion.weeklyOffer}` : `Mensual · S/ ${promotion.monthlyOffer}`;
         });
-        priceSummary.innerHTML = `<b>${promotion.blocks} bloques.</b> Semana: <del>S/ ${promotion.weeklyRegular}</del> S/ ${promotion.weeklyOffer} · Mes: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer}.`;
+        priceSummary.innerHTML = `<b>${promotion.blocks} bloques seleccionados.</b> Semana: <del>S/ ${promotion.weeklyRegular}</del> S/ ${promotion.weeklyOffer} · Mes: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer}.`;
       }
-      selectionEditor.querySelector('[data-apply-schedule-selection]').disabled = false;
+      applySelection.disabled = false;
     };
-    selectionEditor.querySelectorAll('[data-schedule-course]').forEach((input) => input.addEventListener('change', renderSelectionPrice));
-    selectionEditor.querySelectorAll('[data-schedule-frequency]').forEach((button) => button.addEventListener('click', () => { activeCadence = button.dataset.scheduleFrequency; renderSelectionPrice(); }));
-    selectionEditor.querySelector('[data-apply-schedule-selection]').addEventListener('click', () => {
-      activeCourses = Array.from(selectionEditor.querySelectorAll('[data-schedule-course]:checked')).map((input) => input.value);
+    const toggleCourse = (course) => {
+      activeCourses = activeCourses.includes(course) ? activeCourses.filter((title) => title !== course) : [...activeCourses, course];
+      updateScheduleSelection();
+      renderSelectionSummary();
+      applySelection.textContent = 'Aplicar selección';
+    };
+    document.querySelectorAll('.level-table td').forEach((cell) => {
+      const course = courseForSubject(cell.textContent.trim());
+      if (!course) return;
+      cell.addEventListener('click', () => toggleCourse(course));
+      cell.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        toggleCourse(course);
+      });
+    });
+    frequency.querySelectorAll('button').forEach((button) => button.addEventListener('click', () => {
+      activeCadence = button.dataset.scheduleFrequency;
+      renderSelectionSummary();
+    }));
+    applySelection.addEventListener('click', () => {
       const promotion = calculatePromotion(activeCourses);
       activePrice = `S/ ${activeCadence === 'weekly' ? promotion.weeklyOffer : promotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
       activePackage = 'Promoción personalizada';
-      updateScheduleHighlight();
+      const selectionParams = new URLSearchParams({ nivel: levelKey, vista: 'horario', origen: 'paquete', paquete: activePackage, cursos: activeCourses.join('|'), turno: activeTurn, precio: activePrice, modalidad: activeCadence });
+      history.replaceState(null, '', `nivel.html?${selectionParams}`);
       shiftContact.href = enrollmentUrlForShift(activeTurn);
-      selectionEditor.querySelector('[data-apply-schedule-selection]').textContent = 'Selección aplicada al horario';
+      applySelection.textContent = 'Selección aplicada';
     });
-    renderSelectionPrice();
+    updateScheduleSelection();
+    renderSelectionSummary();
   }
   document.querySelectorAll('.course-grid article').forEach((card, index) => {
     const [title] = level.courses[index];
@@ -415,7 +432,7 @@ if (currentPage === 'nivel.html') {
   if (view === 'horario' && (selectedCourse || selectedCourses.length || selectedPackage)) {
     const scheduleContext = document.createElement('p');
     scheduleContext.className = 'form-selection';
-    scheduleContext.textContent = `${selectedPackage ? `Paquete elegido: ${selectedPackage}` : `Curso de interés: ${selectedCourse}`}${activeCourses.length ? ` · Cursos: ${activeCourses.join(', ')}` : ''}${selectedPrice ? ` · ${selectedPrice}` : ''}. Puedes editar los cursos y conservar el turno elegido.`;
+    scheduleContext.textContent = `${selectedPackage ? `Paquete elegido: ${selectedPackage}` : `Curso de interés: ${selectedCourse}`}${activeCourses.length ? ` · Cursos: ${activeCourses.join(', ')}` : ''}${selectedPrice ? ` · ${selectedPrice}` : ''}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`;
     document.querySelector('.shift-switch')?.before(scheduleContext);
   }
   const enrollmentUrlForShift = (shift) => {

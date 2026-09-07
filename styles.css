@@ -153,15 +153,15 @@ a { color: inherit; text-decoration: none; }
 .package-turn-actions .choose-package:last-child:hover { background: #b88724; color: #fff; }
 .promotion-turns { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 16px; }
 .promotion-turns p { width: 100%; margin: 0; color: var(--ink); font-size: .86rem; font-weight: 600; }
-.schedule-selection-editor { margin: 0 0 26px; padding: 20px; border: 1px solid #d6c19d; background: #fff8e8; }
-.schedule-selection-editor h3 { margin: 0; font-size: 1.25rem; }
-.schedule-selection-editor > p { margin: 7px 0 0; color: var(--muted); font-size: .84rem; }
-.schedule-selection-editor .promo-course-grid { margin: 18px 0; }
-.schedule-price { min-height: 46px; padding: 12px; background: #edf4ee; color: #215a38; font-size: .86rem; }
-.schedule-frequency { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-.schedule-frequency button { border: 1px solid #173b76; background: #fff; color: var(--blue-dark); padding: 9px 12px; font: 600 .8rem "Work Sans", sans-serif; cursor: pointer; }
-.schedule-frequency button.is-selected { background: #173b76; color: #fff; }
-.schedule-selection-editor [data-apply-schedule-selection] { margin-top: 14px; }
+.schedule-selection-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 0 18px; padding: 12px; border-left: 3px solid #2f7a4b; background: #edf4ee; }
+.schedule-selection-label { margin: 0; color: #215a38; font: 600 .8rem "Outfit", sans-serif; text-transform: uppercase; letter-spacing: .06em; }
+.schedule-selection-price { flex: 1 1 360px; color: #215a38; font-size: .84rem; }
+.schedule-selection-frequency { display: flex; flex-wrap: wrap; gap: 6px; }
+.schedule-selection-frequency button { border: 1px solid #173b76; background: #fff; color: var(--blue-dark); padding: 8px 10px; font: 600 .76rem "Work Sans", sans-serif; cursor: pointer; }
+.schedule-selection-frequency button.is-selected { background: #173b76; color: #fff; }
+.schedule-selection-summary [data-apply-schedule-selection] { min-height: 38px; padding: 8px 12px; font-size: .8rem; }
+.level-table td[role="button"] { cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
+.level-table td[role="button"]:focus-visible { outline: 3px solid #b88724; outline-offset: -3px; }
 .interest-form input[type="text"], .interest-form input[type="tel"] { position: relative; z-index: 1; pointer-events: auto; }
 @media (max-width: 500px) { .whatsapp-float { right: 16px; bottom: 16px; min-height: 48px; padding-right: 14px; } }
 @media (max-width: 820px) { .hero-art { min-height: 0; aspect-ratio: 16 / 10; background-color: #fff; background-position: center; background-size: contain; } }
