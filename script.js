@@ -34,7 +34,7 @@ const supabasePublishableKey = 'sb_publishable_1OlMJBnTzARk-Rbn9U-Ayg_kMp4laPv';
 const turnstileSiteKey = '0x4AAAAAAEq47cBjcOQWdlyp';
 
 async function saveRequest(request) {
-  const response = await fetch(`${supabaseUrl}/rest/v1/solicitudes`, {
+  const response = await fetch(`${supabaseUrl}/functions/v1/submit-solicitud`, {
     method: 'POST',
     headers: {
       apikey: supabasePublishableKey,
@@ -449,6 +449,7 @@ if (form) {
         nivel: selectedLevel || null,
         paquete: selectedPackage || null,
         turno: turnLabel || null,
+        turnstile_token: turnstileToken,
       });
       window.open(whatsappLink(`Hola, quiero solicitar información e inscribirme en LUMVEA.\n${selection}\nNombre completo: ${nameField.value.trim()}\nCelular: ${phoneField.value.trim()}`), '_blank', 'noopener');
       message.textContent = 'Solicitud guardada. Abrimos WhatsApp con los datos enviados.';
