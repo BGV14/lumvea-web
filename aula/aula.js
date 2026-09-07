@@ -11,15 +11,44 @@ function addGlobalNav() {
   document.querySelector('.aula-public-header')?.remove();
   const header = document.createElement('header');
   header.className = 'site-header aula-public-header';
-  header.innerHTML = '<a class="brand-logo" href="../index.html"><img src="../assets/logos/lumvea-header.png" alt="LUMVEA Educación" /></a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Abrir menu</span><span aria-hidden="true">Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Navegacion principal"><a href="../index.html">Inicio</a><a href="../programas.html">Programas</a><a href="../nivel.html">Horarios</a><a href="../metodo.html">Método</a><a class="nav-active" href="../aula/">Aula virtual</a><a href="../inscripcion.html">Inscripción</a></nav>';
-  header.querySelector('button').addEventListener('click', () => {
+  header.style.cssText = '--ink:#11233d;--blue:#1f56a7;--blue-dark:#14386f;--orange:#e75d24;--cream:#f5f1e8;--paper:#fffdfa;--line:#d8d2c8;--muted:#5d6876;background:var(--paper);';
+  const links = [
+    { href: '../index.html', label: 'Inicio' },
+    { href: '../nivel.html?nivel=primaria&vista=inicio', label: 'Primaria', items: [['../nivel.html?nivel=primaria&vista=inicio', 'Ver nivel'], ['../nivel.html?nivel=primaria&vista=cursos', 'Cursos'], ['../nivel.html?nivel=primaria&vista=horario', 'Horario'], ['../nivel.html?nivel=primaria&vista=paquetes', 'Paquetes']] },
+    { href: '../nivel.html?nivel=secundaria&vista=inicio', label: 'Secundaria', items: [['../nivel.html?nivel=secundaria&vista=inicio', 'Ver nivel'], ['../nivel.html?nivel=secundaria&vista=cursos', 'Cursos'], ['../nivel.html?nivel=secundaria&vista=horario', 'Horario'], ['../nivel.html?nivel=secundaria&vista=paquetes', 'Paquetes']] },
+    { href: '../nivel.html?nivel=preuniversitaria&vista=inicio', label: 'Preuniversitaria', items: [['../nivel.html?nivel=preuniversitaria&vista=inicio', 'Ver nivel'], ['../nivel.html?nivel=preuniversitaria&vista=cursos', 'Cursos y turnos'], ['../nivel.html?nivel=preuniversitaria&vista=horario', 'Bloques horarios'], ['../nivel.html?nivel=preuniversitaria&vista=paquetes', 'Paquetes']] },
+    { href: '../metodo.html', label: 'Método' },
+    { href: '../aula/', label: 'Aula virtual' },
+    { href: '../inscripcion.html?origen=directo', label: 'Inscripción' },
+  ];
+  header.innerHTML = `<a class="brand brand-logo" href="../index.html"><img src="../assets/logos/lumvea-header.png" alt="LUMVEA: Primaria, Secundaria y Preuniversitaria" /></a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Abrir menu</span><span>Menu</span></button><nav id="site-nav" class="site-nav" aria-label="Navegacion principal">${links.map(({ href, label, items }) => {
+    if (!items) return `<a${label === 'Aula virtual' ? ' class="nav-active" aria-current="page"' : ''} href="${href}">${label}</a>`;
+    return `<div class="nav-dropdown"><button class="nav-dropdown-trigger" type="button" aria-expanded="false">${label}</button><button class="nav-dropdown-arrow" type="button" aria-expanded="false" aria-label="Ver secciones de ${label}">⌄</button><div class="nav-dropdown-panel">${items.map(([itemHref, itemLabel]) => `<a href="${itemHref}">${itemLabel}</a>`).join('')}</div></div>`;
+  }).join('')}</nav>`;
+  const menuButton = header.querySelector('.menu-button');
+  menuButton.addEventListener('click', () => {
     const navigation = header.querySelector('.site-nav');
     const open = navigation.classList.toggle('is-open');
-    header.querySelector('button').setAttribute('aria-expanded', String(open));
+    menuButton.setAttribute('aria-expanded', String(open));
   });
+  header.querySelectorAll('.nav-dropdown button').forEach((button) => button.addEventListener('click', () => {
+    const dropdown = button.closest('.nav-dropdown');
+    header.querySelectorAll('.nav-dropdown').forEach((item) => {
+      if (item === dropdown) return;
+      item.classList.remove('is-open');
+      item.querySelectorAll('button').forEach((itemButton) => itemButton.setAttribute('aria-expanded', 'false'));
+    });
+    const open = dropdown.classList.toggle('is-open');
+    dropdown.querySelectorAll('button').forEach((itemButton) => itemButton.setAttribute('aria-expanded', String(open)));
+  }));
+  header.querySelectorAll('.nav-dropdown').forEach((dropdown) => dropdown.addEventListener('mouseleave', () => {
+    if (window.matchMedia('(max-width: 820px)').matches) return;
+    dropdown.classList.remove('is-open');
+    dropdown.querySelectorAll('button').forEach((button) => button.setAttribute('aria-expanded', 'false'));
+  }));
   header.querySelectorAll('.site-nav a').forEach((link) => link.addEventListener('click', () => {
     header.querySelector('.site-nav').classList.remove('is-open');
-    header.querySelector('button').setAttribute('aria-expanded', 'false');
+    menuButton.setAttribute('aria-expanded', 'false');
   }));
   document.body.prepend(header);
 }
