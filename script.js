@@ -46,6 +46,7 @@ async function saveRequest(request) {
     body: JSON.stringify(request),
   });
   if (!response.ok) throw new Error('No se pudo guardar la solicitud.');
+  return response.json();
 }
 
 document.querySelectorAll('.brand').forEach((brand) => {
@@ -753,27 +754,33 @@ if (form && form.isConnected) {
       return;
     }
     try {
-      await saveRequest({
+      const savedRequest = await saveRequest({
         nombre_completo: nameField.value.trim(),
         celular: phoneField.value.trim(),
         nivel: selectedLevel || null,
         curso: selectedCourse || null,
-        paquete: [selectedPackage, selectedPrice].filter(Boolean).join(' · ') || null,
+        paquete: selectedPackage || null,
+        modalidad: selectedCadence || null,
         turno: turnLabel || null,
         origen: selectedOrigin,
         tipo_solicitud: requestType,
         turnstile_token: turnstileToken,
       });
+      const confirmedPromotion = savedRequest.solicitud;
+      const confirmedCourse = confirmedPromotion?.courses?.join(', ') || selectedCourse;
+      const confirmedPackage = confirmedPromotion?.packageName || selectedPackage;
+      const confirmedPrice = confirmedPromotion?.price || selectedPrice;
+      const confirmedCadence = confirmedPromotion?.cadence || selectedCadence;
       const whatsappMessage = [
         `Hola, quiero recibir información de LUMVEA. Tipo de solicitud: ${requestType}.`,
         '',
         'Datos de la solicitud:',
         `Origen: ${selectedOrigin}`,
         ...(selectedLevel ? [`Nivel: ${selectedLevel}`] : []),
-        ...(selectedCourse ? [`Curso: ${selectedCourse}`] : []),
-        ...(selectedPackage ? [`Paquete o promoción: ${selectedPackage}`] : []),
-        ...(selectedPrice ? [`Precio elegido: ${selectedPrice}`] : []),
-        ...(selectedCadence ? [`Modalidad: ${selectedCadence === 'weekly' ? 'Semanal' : 'Mensual'}`] : []),
+        ...(confirmedCourse ? [`Curso: ${confirmedCourse}`] : []),
+        ...(confirmedPackage ? [`Paquete o promoción: ${confirmedPackage}`] : []),
+        ...(confirmedPrice ? [`Precio confirmado: ${confirmedPrice}`] : []),
+        ...(confirmedCadence ? [`Modalidad: ${confirmedCadence === 'weekly' ? 'Semanal' : 'Mensual'}`] : []),
         ...(turnLabel ? [`Turno: ${turnLabel}`] : []),
         `Nombre completo: ${nameField.value.trim()}`,
         `Celular: ${phoneField.value.trim()}`,
