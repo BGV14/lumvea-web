@@ -338,12 +338,23 @@ if (currentPage === 'nivel.html') {
   if (view === 'horario' && activeCourses.length) {
     const scheduleSummary = document.createElement('section');
     scheduleSummary.className = 'schedule-selection-summary';
-    scheduleSummary.innerHTML = '<p class="schedule-selection-label">Tu selección</p><div class="schedule-selection-price" aria-live="polite"></div><div class="schedule-selection-frequency" hidden><button type="button" data-schedule-frequency="weekly">Semanal</button><button type="button" data-schedule-frequency="monthly">Mensual</button></div><button class="button button-primary" type="button" data-apply-schedule-selection>Aplicar selección</button>';
+    scheduleSummary.innerHTML = '<p class="schedule-selection-label">Tu selección</p><div class="schedule-selection-price" aria-live="polite"></div><div class="schedule-selection-frequency" hidden><button type="button" data-schedule-frequency="weekly">Semanal</button><button type="button" data-schedule-frequency="monthly">Mensual</button></div><a class="button button-primary" data-confirm-schedule-selection>Confirmar selección</a>';
     document.querySelector('.schedule-hint')?.after(scheduleSummary);
     const priceSummary = scheduleSummary.querySelector('.schedule-selection-price');
     const frequency = scheduleSummary.querySelector('.schedule-selection-frequency');
-    const applySelection = scheduleSummary.querySelector('[data-apply-schedule-selection]');
+    const confirmSelection = scheduleSummary.querySelector('[data-confirm-schedule-selection]');
+    const scheduleContext = document.createElement('p');
+    scheduleContext.className = 'form-selection';
+    document.querySelector('.shift-switch')?.before(scheduleContext);
     const courseForSubject = (subject) => level.courses.find(([course]) => normalizeCourse(course) === normalizeCourse(subject))?.[0];
+    const enrollmentUrlForShift = (shift) => {
+      const enrollmentParams = new URLSearchParams({ origen: 'horario', nivel: levelKey, turno: shift });
+      if (activeCourses.length) enrollmentParams.set('cursos', activeCourses.join('|'));
+      if (activePackage) enrollmentParams.set('paquete', activePackage);
+      if (activePrice) enrollmentParams.set('precio', activePrice);
+      if (activeCadence) enrollmentParams.set('modalidad', activeCadence);
+      return `inscripcion.html?${enrollmentParams}#inscripción`;
+    };
     const updateScheduleSelection = () => {
       const selectedCourseNames = new Set(activeCourses.map(normalizeCourse));
       document.querySelectorAll('.level-table td').forEach((cell) => {
@@ -363,13 +374,13 @@ if (currentPage === 'nivel.html') {
       const promotion = calculatePromotion(activeCourses);
       const predefinedPackage = predefinedPackageForCourses(activeCourses);
       activePackage = predefinedPackage || 'Promoción personalizada';
-      const contextDetails = predefinedPackage ? '' : ` · Cursos: ${activeCourses.join(', ') || 'ninguno'}`;
       if (!promotion.valid) {
         activePrice = '';
         priceSummary.textContent = activeCourses.length ? `${promotion.blocks} bloques seleccionados. Agrega cursos hasta llegar a 3 bloques para activar la promoción.` : 'Selecciona al menos un curso.';
         frequency.hidden = true;
-        applySelection.disabled = true;
-        document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage}${contextDetails}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
+        confirmSelection.removeAttribute('href');
+        confirmSelection.setAttribute('aria-disabled', 'true');
+        scheduleContext.textContent = predefinedPackage ? `Paquete actual: ${activePackage}` : 'Promoción personalizada: —';
         return;
       }
       if (activeCourses.length === 1) {
@@ -388,14 +399,14 @@ if (currentPage === 'nivel.html') {
         priceSummary.innerHTML = `<b>${promotion.blocks} bloques seleccionados.</b> Semana: <del>S/ ${promotion.weeklyRegular}</del> S/ ${promotion.weeklyOffer} · Mes: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer}.`;
         activePrice = `S/ ${activeCadence === 'weekly' ? promotion.weeklyOffer : promotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
       }
-      applySelection.disabled = false;
-      document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage}${contextDetails} · ${activeCadence === 'weekly' ? 'Promoción semanal' : 'Promoción mensual'} · ${activePrice}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
+      confirmSelection.href = enrollmentUrlForShift(activeTurn);
+      confirmSelection.setAttribute('aria-disabled', 'false');
+      scheduleContext.textContent = predefinedPackage ? `Paquete actual: ${activePackage}` : `Promoción personalizada: ${activePrice}`;
     };
     const toggleCourse = (course) => {
       activeCourses = activeCourses.includes(course) ? activeCourses.filter((title) => title !== course) : [...activeCourses, course];
       updateScheduleSelection();
       renderSelectionSummary();
-      applySelection.textContent = 'Aplicar selección';
     };
     document.querySelectorAll('.level-table td').forEach((cell) => {
       const course = courseForSubject(cell.textContent.trim());
@@ -411,15 +422,6 @@ if (currentPage === 'nivel.html') {
       activeCadence = button.dataset.scheduleFrequency;
       renderSelectionSummary();
     }));
-    applySelection.addEventListener('click', () => {
-      const promotion = calculatePromotion(activeCourses);
-      activePrice = `S/ ${activeCadence === 'weekly' ? promotion.weeklyOffer : promotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
-      activePackage = predefinedPackageForCourses(activeCourses) || 'Promoción personalizada';
-      const selectionParams = new URLSearchParams({ nivel: levelKey, vista: 'horario', origen: 'paquete', paquete: activePackage, cursos: activeCourses.join('|'), turno: activeTurn, precio: activePrice, modalidad: activeCadence });
-      history.replaceState(null, '', `nivel.html?${selectionParams}`);
-      shiftContact.href = enrollmentUrlForShift(activeTurn);
-      applySelection.textContent = 'Selección aplicada';
-    });
     updateScheduleSelection();
     renderSelectionSummary();
   }
@@ -442,26 +444,6 @@ if (currentPage === 'nivel.html') {
       card.hidden = !card.querySelector('.package-subjects').textContent.includes(selectedCourse);
     });
   }
-  if (view === 'horario' && (selectedCourse || selectedCourses.length || selectedPackage)) {
-    const scheduleContext = document.createElement('p');
-    scheduleContext.className = 'form-selection';
-    const predefinedPackage = predefinedPackageForCourses(activeCourses);
-    scheduleContext.textContent = `${predefinedPackage ? `Paquete actual: ${predefinedPackage}` : selectedPackage ? `Paquete actual: ${selectedPackage}${activeCourses.length ? ` · Cursos: ${activeCourses.join(', ')}` : ''}` : `Curso de interés: ${selectedCourse}`}${selectedPrice ? ` · ${selectedPrice}` : ''}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`;
-    document.querySelector('.shift-switch')?.before(scheduleContext);
-  }
-  const enrollmentUrlForShift = (shift) => {
-    const enrollmentParams = new URLSearchParams({ origen: 'horario', nivel: levelKey, turno: shift });
-    if (activeCourses.length) enrollmentParams.set('cursos', activeCourses.join('|'));
-    if (activePackage) enrollmentParams.set('paquete', activePackage);
-    if (activePrice) enrollmentParams.set('precio', activePrice);
-    if (activeCadence) enrollmentParams.set('modalidad', activeCadence);
-    return `inscripcion.html?${enrollmentParams}#inscripción`;
-  };
-  const shiftContact = document.createElement('a');
-  shiftContact.className = 'button button-primary schedule-contact';
-  shiftContact.textContent = 'Quiero este turno';
-  const shiftSwitch = document.querySelector('.shift-switch');
-  if (shiftSwitch) shiftSwitch.after(shiftContact);
   const shiftTimes = {
     morning: ['08:00 - 09:30', '09:30 - 09:50', '09:50 - 11:20', '11:20 - 11:40', '11:40 - 13:10', '13:10 - 13:30', '13:30 - 15:00'].slice(0, scheduleRows.length),
     evening: ['15:00 - 16:30', '16:30 - 16:50', '16:50 - 18:20', '18:20 - 18:40', '18:40 - 20:10', '20:10 - 20:30', '20:30 - 22:00'].slice(0, scheduleRows.length),
@@ -471,7 +453,8 @@ if (currentPage === 'nivel.html') {
       document.querySelectorAll('.shift-button').forEach((item) => item.classList.toggle('is-selected', item === button));
       document.querySelectorAll('[data-time]').forEach((cell) => { cell.textContent = shiftTimes[button.dataset.shift][cell.dataset.time]; });
       activeTurn = button.dataset.shift;
-      shiftContact.href = enrollmentUrlForShift(activeTurn);
+      const confirmation = document.querySelector('[data-confirm-schedule-selection]');
+      if (confirmation?.getAttribute('aria-disabled') !== 'true') confirmation?.setAttribute('href', enrollmentUrlForShift(activeTurn));
     });
   });
   document.querySelectorAll('[data-time]').forEach((cell) => { cell.textContent = shiftTimes[activeTurn][cell.dataset.time]; });
@@ -488,7 +471,6 @@ if (currentPage === 'nivel.html') {
     }));
     button.replaceWith(actions);
   });
-  shiftContact.href = enrollmentUrlForShift(activeTurn);
   document.querySelectorAll('.level-package-filter').forEach((filter) => {
     filter.addEventListener('click', () => {
       const type = filter.dataset.filter;
