@@ -71,6 +71,13 @@ document.querySelectorAll('.nav-dropdown button').forEach((button) => {
   });
 });
 
+document.querySelectorAll('.nav-dropdown').forEach((dropdown) => {
+  dropdown.addEventListener('mouseleave', () => {
+    dropdown.classList.remove('is-open');
+    dropdown.querySelectorAll('button').forEach((button) => button.setAttribute('aria-expanded', 'false'));
+  });
+});
+
 
 const currentPage = location.pathname.split('/').pop() || 'index.html';
 const levelSchedules = {
