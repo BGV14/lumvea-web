@@ -182,6 +182,28 @@ if (currentPage === 'nivel.html') {
     : levelKey === 'secundaria'
       ? { math: 'Razonamiento Matemático, Aritmética, Álgebra, Trigonometría y Geometría', communication: 'Lenguaje, Literatura y Razonamiento Verbal', science: 'Física, Química y Biología', english: 'Inglés' }
       : { math: 'Razonamiento Matemático, Aritmética, Álgebra, Trigonometría y Geometría', communication: 'Lenguaje, Literatura y Razonamiento Verbal', science: 'Física, Química y Biología', social: 'Psicología, Educación Cívica, Historia del Perú, Historia Universal, Geografía, Economía y Filosofía', english: 'Inglés' };
+  const scheduleAreaFor = (subject) => {
+    const normalizedSubject = subject.toLowerCase();
+    if (['razonamiento matemático', 'aritmética', 'álgebra', 'geometría', 'trigonometría'].includes(normalizedSubject)) return 'math';
+    if (['lenguaje', 'comprensión lectora', 'razonamiento verbal', 'literatura'].includes(normalizedSubject)) return 'communication';
+    if (['personal social', 'ciencia y tecnología', 'física', 'química', 'biología'].includes(normalizedSubject)) return 'science';
+    if (['psicología', 'cívica', 'historia del perú', 'historia universal', 'geografía', 'economía', 'filosofía'].includes(normalizedSubject)) return 'social';
+    if (normalizedSubject === 'inglés') return 'english';
+    return '';
+  };
+  const packageAreasFor = (packageName) => {
+    if (!level.packages.some(([title]) => title === packageName)) return [];
+    if (packageName === 'Paquete completo') return Object.keys(subjectGroups);
+    const normalizedPackage = packageName.toLowerCase();
+    const areas = [];
+    if (normalizedPackage.includes('matemática')) areas.push('math');
+    if (normalizedPackage.includes('comunicación')) areas.push('communication');
+    if (normalizedPackage.includes('naturales') || (normalizedPackage.includes('ciencias') && !normalizedPackage.includes('sociales'))) areas.push('science');
+    if (levelKey === 'preuniversitaria' && normalizedPackage.includes('sociales')) areas.push('social');
+    if (normalizedPackage.includes('inglés')) areas.push('english');
+    return areas;
+  };
+  const selectedPackageAreas = packageAreasFor(selectedPackage);
   const subjectsFor = (title) => {
     if (title === 'Paquete completo') return Object.values(subjectGroups).join(' · ');
     const normalizedTitle = title.toLowerCase();
@@ -196,6 +218,19 @@ if (currentPage === 'nivel.html') {
   const packages = `<section class="level-content section"><p class="eyebrow">PAQUETES</p><h2>Opciones semanales y mensuales.</h2><p class="content-lead">La mensualidad equivale a cuatro semanas del mismo programa.</p><div class="package-controls level-package-controls" role="group" aria-label="Filtrar paquetes"><button class="level-package-filter is-selected" type="button" data-filter="all" aria-pressed="true">Todos</button><button class="level-package-filter" type="button" data-filter="area" aria-pressed="false">Por área</button><button class="level-package-filter" type="button" data-filter="combo" aria-pressed="false">Combinados</button><button class="level-package-filter" type="button" data-filter="complete" aria-pressed="false">Completo</button></div><div class="package-grid">${level.packages.map(([title, weekly, monthly]) => { const type = title === 'Paquete completo' ? 'complete' : title.includes('+') ? 'combo' : 'area'; const weeklyOffer = Number(weekly.replace('S/ ', '')); const monthlyOffer = Number(monthly.replace('S/ ', '')); const weeklyRegular = weeklyOffer + (levelKey === 'preuniversitaria' ? 4 : 3); const monthlyRegular = levelKey === 'preuniversitaria' ? ({ 70: 96, 24: 32, 60: 80, 84: 112, 36: 48, 120: 160, 156: 208, 108: 144, 276: 368 }[monthlyOffer]) : Math.round(monthlyOffer * 4 / 3); return `<article class="package-card level-package-card" data-type="${type}"><p class="package-label">${type === 'complete' ? 'PREPARACIÓN INTEGRAL' : type === 'combo' ? 'COMBINADO' : 'POR ÁREA'} · ${level.name.toUpperCase()}</p><h3>${title}</h3><p class="package-subjects"><b>Cursos:</b> ${subjectsFor(title)}</p><p class="price-row"><span>Semana</span><del>S/ ${weeklyRegular}</del><strong>${weekly}</strong><em>Oferta</em></p><p class="price-row"><span>Mes: 4 sem.</span><del>S/ ${monthlyRegular}</del><strong>${monthly}</strong><em>Oferta</em></p><button class="choose-package" type="button" data-package="${title}">Elegir paquete</button></article>`; }).join('')}</div><p class="package-selection" aria-live="polite"></p></section>`;
   const summary = `<section class="level-content section level-start"><p class="eyebrow">EMPIEZA AQUÍ</p><h2>¿Qué quieres revisar?</h2><p class="content-lead">Selecciona una opción para conocer las materias, ver el horario semanal o comparar los paquetes disponibles.</p><div class="overview-links"><a href="${levelUrl('cursos')}">Cursos y materias</a><a href="${levelUrl('horario')}">Horario semanal</a><a href="${levelUrl('paquetes')}">Paquetes y ofertas</a></div></section>`;
   app.innerHTML = intro + (view === 'cursos' ? courses : view === 'horario' ? schedule : view === 'paquetes' ? packages : summary);
+  if (view === 'horario' && selectedPackageAreas.length) {
+    const packageLegend = document.createElement('p');
+    packageLegend.className = 'schedule-package-legend';
+    packageLegend.innerHTML = '<span class="schedule-key schedule-key-included">Incluido en tu paquete</span><span class="schedule-key schedule-key-excluded">No incluido en tu paquete</span>';
+    document.querySelector('.schedule-hint')?.after(packageLegend);
+    document.querySelectorAll('.level-table td').forEach((cell) => {
+      const subject = cell.textContent.trim();
+      if (!subject || subject === '-' || subject === 'Receso') return;
+      const included = selectedPackageAreas.includes(scheduleAreaFor(subject));
+      cell.classList.add(included ? 'is-package-subject' : 'is-package-excluded');
+      cell.setAttribute('aria-label', `${subject}: ${included ? 'incluido en tu paquete' : 'no incluido en tu paquete'}`);
+    });
+  }
   document.querySelectorAll('.course-grid article').forEach((card, index) => {
     const [title] = level.courses[index];
     const link = card.querySelector('a');
