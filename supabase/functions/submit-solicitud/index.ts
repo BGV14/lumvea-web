@@ -72,7 +72,6 @@ function calculatePromotion(level: keyof typeof courseBlocks, courseText: string
   if (uniqueCourses.length === 1) {
     return { courses: uniqueCourses, blocks, packageName: 'Promoción mensual personalizada', price: `S/ ${monthlyOffer} / mes`, cadence: 'monthly' };
   }
-  if (blocks < 3) throw new Error('La combinación debe tener al menos 3 bloques.');
   if (!['weekly', 'monthly'].includes(cadence)) throw new Error('Modalidad inválida.');
   return cadence === 'weekly'
     ? { courses: uniqueCourses, blocks, packageName: 'Promoción semanal personalizada', price: `S/ ${weeklyOffer} / semana`, cadence }

@@ -279,7 +279,7 @@ if (currentPage === 'nivel.html') {
     const normalizedCourses = [...coursesToMatch].sort().join('|');
     return level.packages.find(([packageName]) => courseNamesForPackage(packageName).sort().join('|') === normalizedCourses)?.[0] || '';
   };
-  const promotionBuilder = `<section class="custom-promotion section"><p class="eyebrow">ARMA TU PROMOCIÓN</p><h2>Combina cursos y crea tu propio paquete.</h2><p class="content-lead">Un curso tiene promoción mensual. Al combinar cursos, podrás elegir una promoción semanal o mensual; desde tres bloques se descuenta un bloque por semana.</p><div class="promo-rules"><span><b>1 curso</b> · Solo promoción mensual</span><span><b>2 o más cursos</b> · Elige semanal o mensual</span></div><div class="promo-course-grid">${level.courses.map(([title, area, blocks]) => `<label class="promo-course-option"><input type="checkbox" data-promo-course data-blocks="${blocks}" value="${title}"${selectedCourse === title ? ' checked' : ''} /><span><b>${title}</b><small>${area} · ${blocks} ${blocks === 1 ? 'bloque' : 'bloques'}</small></span></label>`).join('')}</div><div class="promo-summary" aria-live="polite">Selecciona cursos para calcular tu promoción.</div><div class="promo-frequency" hidden><p>Elige la modalidad que prefieras:</p><div><button type="button" data-promo-frequency="weekly"></button><button type="button" data-promo-frequency="monthly"></button></div></div><button class="button button-primary custom-promo-continue" type="button" disabled>Continuar con esta promoción</button></section>`;
+  const promotionBuilder = `<section class="custom-promotion section"><p class="eyebrow">ARMA TU PROMOCIÓN</p><h2>Combina cursos y crea tu propio paquete.</h2><p class="content-lead">Un curso tiene promoción mensual. Desde dos cursos, podrás elegir una promoción semanal o mensual.</p><div class="promo-rules"><span><b>1 curso</b> · Solo promoción mensual</span><span><b>2 o más cursos</b> · Elige semanal o mensual</span></div><div class="promo-course-grid">${level.courses.map(([title, area, blocks]) => `<label class="promo-course-option"><input type="checkbox" data-promo-course data-blocks="${blocks}" value="${title}"${selectedCourse === title ? ' checked' : ''} /><span><b>${title}</b><small>${area} · ${blocks} ${blocks === 1 ? 'bloque' : 'bloques'}</small></span></label>`).join('')}</div><div class="promo-summary" aria-live="polite">Selecciona cursos para calcular tu promoción.</div><div class="promo-frequency" hidden><p>Elige la modalidad que prefieras:</p><div><button type="button" data-promo-frequency="weekly"></button><button type="button" data-promo-frequency="monthly"></button></div></div><button class="button button-primary custom-promo-continue" type="button" disabled>Continuar con esta promoción</button></section>`;
   const summary = `<section class="level-content section level-start"><p class="eyebrow">EMPIEZA AQUÍ</p><h2>¿Qué quieres revisar?</h2><p class="content-lead">Selecciona una opción para conocer las materias, ver el horario semanal o comparar los paquetes disponibles.</p><div class="overview-links"><a href="${levelUrl('cursos')}">Cursos y materias</a><a href="${levelUrl('horario')}">Horario semanal</a><a href="${levelUrl('paquetes')}">Paquetes y ofertas</a></div></section>`;
   app.innerHTML = intro + (view === 'cursos' ? courses : view === 'horario' ? schedule : view === 'paquetes' ? packages : summary);
   document.querySelector('.package-selection')?.remove();
@@ -301,8 +301,8 @@ if (currentPage === 'nivel.html') {
   promotionTurns.hidden = true;
   promotionTurns.innerHTML = '<p>Elige tu turno para continuar:</p><button class="button button-primary" type="button" data-promo-turn="morning">Turno mañana</button><button class="button button-plain" type="button" data-promo-turn="evening">Turno tarde / noche</button>';
   promoContinue?.replaceWith(promotionTurns);
-  document.querySelector('.custom-promotion .content-lead')?.replaceChildren('Si eliges un solo curso, solo aplica la promoción mensual. Al elegir más cursos podrás optar por promoción semanal o mensual, siempre que sumen al menos 3 bloques: 1 + 1 no aplica; 2 + 1, 2 + 2 y 1 + 1 + 1 sí.');
-  document.querySelector('.promo-rules')?.replaceChildren(Object.assign(document.createElement('span'), { innerHTML: '<b>1 curso</b> · Solo promoción mensual' }), Object.assign(document.createElement('span'), { innerHTML: '<b>2 o más cursos y 3+ bloques</b> · Elige semanal o mensual' }));
+  document.querySelector('.custom-promotion .content-lead')?.replaceChildren('Si eliges un solo curso, solo aplica la promoción mensual. Desde dos cursos podrás optar por promoción semanal o mensual, incluida la combinación 1 + 1.');
+  document.querySelector('.promo-rules')?.replaceChildren(Object.assign(document.createElement('span'), { innerHTML: '<b>1 curso</b> · Solo promoción mensual' }), Object.assign(document.createElement('span'), { innerHTML: '<b>2 o más cursos</b> · Elige semanal o mensual' }));
   let selectedPromoFrequency = 'weekly';
   const updatePromotion = () => {
     const chosenCourses = Array.from(document.querySelectorAll('[data-promo-course]:checked'));
@@ -325,12 +325,6 @@ if (currentPage === 'nivel.html') {
       promotionTurns.dataset.package = 'Promoción mensual personalizada';
       promotionTurns.dataset.price = `S/ ${monthlyOffer} / mes`;
       promotionTurns.dataset.cadence = 'monthly';
-      return;
-    }
-    if (totalBlocks < 3) {
-      promoSummary.textContent = `Has elegido ${totalBlocks} bloques. Agrega al menos un bloque más para activar la promoción.`;
-      promoFrequency.hidden = true;
-      promotionTurns.hidden = true;
       return;
     }
     promoSummary.innerHTML = `<strong>${totalBlocks} bloques seleccionados.</strong> Semana: <del>S/ ${weeklyRegular}</del> <b>S/ ${weeklyOffer}</b> · Mes: <del>S/ ${monthlyRegular}</del> <b>S/ ${monthlyOffer}</b>.`;
@@ -371,7 +365,7 @@ if (currentPage === 'nivel.html') {
     const monthlyRegular = weeklyOffer * 4;
     const monthlyOffer = monthlyRegular - weeklyOffer;
     if (coursesToPrice.length === 1) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: 'monthly' };
-    if (coursesToPrice.length > 1 && blocks >= 3) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: activeCadence };
+    if (coursesToPrice.length > 1) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: activeCadence };
     return { valid: false, blocks, weeklyRegular };
   };
   if (activeCourses.length && !activePrice) {
@@ -442,7 +436,7 @@ if (currentPage === 'nivel.html') {
       activePackage = 'Promoción personalizada';
       if (!promotion.valid) {
         activePrice = '';
-        priceSummary.textContent = activeCourses.length ? `${promotion.blocks} bloques seleccionados. Agrega cursos hasta llegar a 3 bloques para activar la promoción.` : 'Selecciona al menos un curso.';
+        priceSummary.textContent = 'Selecciona al menos un curso.';
         frequency.hidden = true;
         confirmSelection.removeAttribute('href');
         confirmSelection.setAttribute('aria-disabled', 'true');
