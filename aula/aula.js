@@ -21,6 +21,7 @@ function login() {
 }
 
 async function dashboard(session) {
+  document.querySelector('.aula-header')?.remove();
   const userId = session.user.id;
   const [{ data: profile }, { data: enrollments }, { data: sessions }, { data: materials }] = await Promise.all([
     supabase.from('perfiles').select('nombre_completo, rol').eq('id', userId).single(),
