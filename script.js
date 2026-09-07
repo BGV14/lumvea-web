@@ -17,7 +17,7 @@ if (navigation) {
     { href: 'nivel.html?nivel=preuniversitaria&vista=inicio', label: 'Preuniversitaria', items: [['nivel.html?nivel=preuniversitaria&vista=inicio', 'Ver nivel'], ['nivel.html?nivel=preuniversitaria&vista=cursos', 'Cursos y turnos'], ['nivel.html?nivel=preuniversitaria&vista=horario', 'Bloques horarios'], ['nivel.html?nivel=preuniversitaria&vista=paquetes', 'Paquetes']] },
     { href: 'metodo.html', label: 'Método' },
     { href: 'aula-virtual.html', label: 'Aula virtual' },
-    { href: 'inscripcion.html', label: 'Inscripción' },
+    { href: 'inscripcion.html?origen=directo', label: 'Inscripción' },
   ];
   navigation.innerHTML = links.map(({ href, label, items }) => {
     const active = (href === currentPage || (selectedLevel && href.includes(`nivel=${selectedLevel}`))) ? ' class="nav-active" aria-current="page"' : '';
@@ -100,6 +100,9 @@ if (currentPage === 'nivel.html') {
   const levelKey = params.get('nivel') || 'primaria';
   const view = params.get('vista') || 'inicio';
   const selectedCourse = params.get('curso');
+  const selectedPackage = params.get('paquete');
+  const selectedTurn = params.get('turno');
+  const selectedOrigin = params.get('origen');
   const levels = {
     primaria: {
       name: 'Primaria',
@@ -129,6 +132,12 @@ if (currentPage === 'nivel.html') {
   const level = levels[levelKey] || levels.primaria;
   const app = document.querySelector('#level-interface');
   const base = `nivel.html?nivel=${levelKey}`;
+  const contextParams = new URLSearchParams();
+  if (selectedCourse) contextParams.set('curso', selectedCourse);
+  if (selectedPackage) contextParams.set('paquete', selectedPackage);
+  if (selectedTurn) contextParams.set('turno', selectedTurn);
+  if (selectedOrigin) contextParams.set('origen', selectedOrigin);
+  const levelUrl = (targetView) => `${base}&vista=${targetView}${contextParams.size ? `&${contextParams}` : ''}`;
   const levelTitle = { primaria: 'Refuerzo escolar para primaria.', secundaria: 'Acompañamiento para secundaria.', preuniversitaria: 'Preparación preuniversitaria.' }[levelKey];
   const courseDescriptions = {
     'Razonamiento Matemático': 'Entrena tu lógica y aprende a resolver problemas con seguridad.',
@@ -154,7 +163,7 @@ if (currentPage === 'nivel.html') {
     'Filosofía': 'Formula mejores preguntas y desarrolla pensamiento crítico.',
     'Inglés': 'Comunícate con mayor confianza y abre nuevas oportunidades de aprendizaje.',
   };
-  const subnav = `<nav class="level-subnav" aria-label="Secciones de ${level.name}"><a class="${view === 'inicio' ? 'is-current' : ''}" href="${base}&vista=inicio">Resumen</a><a class="${view === 'cursos' ? 'is-current' : ''}" href="${base}&vista=cursos">Cursos</a><a class="${view === 'horario' ? 'is-current' : ''}" href="${base}&vista=horario">Horario</a><a class="${view === 'paquetes' ? 'is-current' : ''}" href="${base}&vista=paquetes">Paquetes</a></nav>`;
+  const subnav = `<nav class="level-subnav" aria-label="Secciones de ${level.name}"><a class="${view === 'inicio' ? 'is-current' : ''}" href="${levelUrl('inicio')}">Resumen</a><a class="${view === 'cursos' ? 'is-current' : ''}" href="${levelUrl('cursos')}">Cursos</a><a class="${view === 'horario' ? 'is-current' : ''}" href="${levelUrl('horario')}">Horario</a><a class="${view === 'paquetes' ? 'is-current' : ''}" href="${levelUrl('paquetes')}">Paquetes</a></nav>`;
   const intro = `<section class="page-intro section"><p class="eyebrow">LUMVEA ${level.name.toUpperCase()}</p><h1>${levelTitle}</h1><p>${level.lead} Revisa los cursos, el horario o los paquetes según lo que necesites.</p></section>${subnav}`;
   const courses = `<section class="level-content section"><p class="eyebrow">CURSOS</p><h2>Elige la materia que quieres fortalecer.</h2><p class="content-lead">Cada curso está diseñado para ayudarte a avanzar con práctica guiada, explicaciones claras y objetivos alcanzables.</p><div class="course-grid">${level.courses.map(([title, area]) => `<article><p class="course-area">${area}</p><h3>${title}</h3><p class="course-copy">${courseDescriptions[title]}</p><a href="${base}&vista=paquetes">Ver opciones relacionadas →</a></article>`).join('')}</div></section>`;
   const recessDays = levelKey === 'primaria' ? 5 : 6;
@@ -185,14 +194,24 @@ if (currentPage === 'nivel.html') {
     return subjects.join(' · ');
   };
   const packages = `<section class="level-content section"><p class="eyebrow">PAQUETES</p><h2>Opciones semanales y mensuales.</h2><p class="content-lead">La mensualidad equivale a cuatro semanas del mismo programa.</p><div class="package-controls level-package-controls" role="group" aria-label="Filtrar paquetes"><button class="level-package-filter is-selected" type="button" data-filter="all" aria-pressed="true">Todos</button><button class="level-package-filter" type="button" data-filter="area" aria-pressed="false">Por área</button><button class="level-package-filter" type="button" data-filter="combo" aria-pressed="false">Combinados</button><button class="level-package-filter" type="button" data-filter="complete" aria-pressed="false">Completo</button></div><div class="package-grid">${level.packages.map(([title, weekly, monthly]) => { const type = title === 'Paquete completo' ? 'complete' : title.includes('+') ? 'combo' : 'area'; const weeklyOffer = Number(weekly.replace('S/ ', '')); const monthlyOffer = Number(monthly.replace('S/ ', '')); const weeklyRegular = weeklyOffer + (levelKey === 'preuniversitaria' ? 4 : 3); const monthlyRegular = levelKey === 'preuniversitaria' ? ({ 70: 96, 24: 32, 60: 80, 84: 112, 36: 48, 120: 160, 156: 208, 108: 144, 276: 368 }[monthlyOffer]) : Math.round(monthlyOffer * 4 / 3); return `<article class="package-card level-package-card" data-type="${type}"><p class="package-label">${type === 'complete' ? 'PREPARACIÓN INTEGRAL' : type === 'combo' ? 'COMBINADO' : 'POR ÁREA'} · ${level.name.toUpperCase()}</p><h3>${title}</h3><p class="package-subjects"><b>Cursos:</b> ${subjectsFor(title)}</p><p class="price-row"><span>Semana</span><del>S/ ${weeklyRegular}</del><strong>${weekly}</strong><em>Oferta</em></p><p class="price-row"><span>Mes: 4 sem.</span><del>S/ ${monthlyRegular}</del><strong>${monthly}</strong><em>Oferta</em></p><button class="choose-package" type="button" data-package="${title}">Elegir paquete</button></article>`; }).join('')}</div><p class="package-selection" aria-live="polite"></p></section>`;
-  const summary = `<section class="level-content section level-start"><p class="eyebrow">EMPIEZA AQUÍ</p><h2>¿Qué quieres revisar?</h2><p class="content-lead">Selecciona una opción para conocer las materias, ver el horario semanal o comparar los paquetes disponibles.</p><div class="overview-links"><a href="${base}&vista=cursos">Cursos y materias</a><a href="${base}&vista=horario">Horario semanal</a><a href="${base}&vista=paquetes">Paquetes y ofertas</a></div></section>`;
+  const summary = `<section class="level-content section level-start"><p class="eyebrow">EMPIEZA AQUÍ</p><h2>¿Qué quieres revisar?</h2><p class="content-lead">Selecciona una opción para conocer las materias, ver el horario semanal o comparar los paquetes disponibles.</p><div class="overview-links"><a href="${levelUrl('cursos')}">Cursos y materias</a><a href="${levelUrl('horario')}">Horario semanal</a><a href="${levelUrl('paquetes')}">Paquetes y ofertas</a></div></section>`;
   app.innerHTML = intro + (view === 'cursos' ? courses : view === 'horario' ? schedule : view === 'paquetes' ? packages : summary);
   document.querySelectorAll('.course-grid article').forEach((card, index) => {
     const [title] = level.courses[index];
     const link = card.querySelector('a');
-    link.href = `${base}&vista=paquetes&curso=${encodeURIComponent(title)}`;
+    link.href = `${base}&vista=paquetes&curso=${encodeURIComponent(title)}&origen=curso`;
     link.textContent = 'Ver paquetes relacionados';
+    const courseContact = document.createElement('a');
+    courseContact.href = `inscripcion.html?${new URLSearchParams({ origen: 'curso', nivel: levelKey, curso: title })}#inscripción`;
+    courseContact.textContent = 'Consultar este curso';
+    card.append(courseContact);
   });
+  if (view === 'inicio') {
+    const levelContact = document.createElement('a');
+    levelContact.href = `inscripcion.html?${new URLSearchParams({ origen: 'nivel', nivel: levelKey })}#inscripción`;
+    levelContact.textContent = `Consultar ${level.name}`;
+    document.querySelector('.overview-links')?.append(levelContact);
+  }
   if (view === 'paquetes' && selectedCourse) {
     document.querySelector('.level-content h2').textContent = `Paquetes para ${selectedCourse}.`;
     document.querySelector('.content-lead').textContent = 'Estas opciones incluyen el curso que seleccionaste. También puedes comparar todos los paquetes.';
@@ -200,6 +219,20 @@ if (currentPage === 'nivel.html') {
       card.hidden = !card.querySelector('.package-subjects').textContent.includes(selectedCourse);
     });
   }
+  if (view === 'horario' && (selectedCourse || selectedPackage)) {
+    const scheduleContext = document.createElement('p');
+    scheduleContext.className = 'form-selection';
+    scheduleContext.textContent = selectedPackage
+      ? `Paquete elegido: ${selectedPackage}${selectedCourse ? ` · Curso de interés: ${selectedCourse}` : ''}. Ahora elige un turno.`
+      : `Curso de interés: ${selectedCourse}. Elige el turno que prefieras.`;
+    document.querySelector('.shift-switch')?.before(scheduleContext);
+  }
+  const enrollmentUrlForShift = (shift) => {
+    const enrollmentParams = new URLSearchParams({ origen: 'horario', nivel: levelKey, turno: shift });
+    if (selectedCourse) enrollmentParams.set('curso', selectedCourse);
+    if (selectedPackage) enrollmentParams.set('paquete', selectedPackage);
+    return `inscripcion.html?${enrollmentParams}#inscripción`;
+  };
   const shiftContact = document.createElement('a');
   shiftContact.className = 'button button-primary schedule-contact';
   shiftContact.textContent = 'Quiero este turno';
@@ -213,16 +246,25 @@ if (currentPage === 'nivel.html') {
     button.addEventListener('click', () => {
       document.querySelectorAll('.shift-button').forEach((item) => item.classList.toggle('is-selected', item === button));
       document.querySelectorAll('[data-time]').forEach((cell) => { cell.textContent = shiftTimes[button.dataset.shift][cell.dataset.time]; });
-      shiftContact.href = `inscripcion.html?nivel=${levelKey}&turno=${button.dataset.shift}#inscripción`;
+      shiftContact.href = enrollmentUrlForShift(button.dataset.shift);
     });
   });
   document.querySelectorAll('[data-time]').forEach((cell) => { cell.textContent = shiftTimes.morning[cell.dataset.time]; });
   document.querySelectorAll('.choose-package').forEach((button) => {
     button.addEventListener('click', () => {
-      location.href = `inscripcion.html?nivel=${levelKey}&paquete=${encodeURIComponent(button.dataset.package)}#inscripción`;
+      const packageParams = new URLSearchParams({ nivel: levelKey, vista: 'horario', origen: 'paquete', paquete: button.dataset.package });
+      if (selectedCourse) packageParams.set('curso', selectedCourse);
+      location.href = `nivel.html?${packageParams}`;
     });
+    const packageContact = document.createElement('a');
+    const packageParams = new URLSearchParams({ origen: 'paquete', nivel: levelKey, paquete: button.dataset.package });
+    if (selectedCourse) packageParams.set('curso', selectedCourse);
+    packageContact.href = `inscripcion.html?${packageParams}#inscripción`;
+    packageContact.className = 'package-contact';
+    packageContact.textContent = 'Consultar sin elegir turno';
+    button.after(packageContact);
   });
-  shiftContact.href = `inscripcion.html?nivel=${levelKey}&turno=morning#inscripción`;
+  shiftContact.href = enrollmentUrlForShift('morning');
   document.querySelectorAll('.level-package-filter').forEach((filter) => {
     filter.addEventListener('click', () => {
       const type = filter.dataset.filter;
@@ -377,7 +419,7 @@ if (legacyLevel) {
     if (!packageName) return;
     const button = document.createElement('a');
     button.className = 'choose-package';
-    button.href = `inscripcion.html?nivel=${legacyLevel}&paquete=${encodeURIComponent(packageName)}#inscripción`;
+    button.href = `nivel.html?nivel=${legacyLevel}&vista=horario&origen=paquete&paquete=${encodeURIComponent(packageName)}`;
     button.textContent = 'Elegir paquete';
     card.append(button);
   });
@@ -386,8 +428,24 @@ if (legacyLevel) {
 if (form && form.isConnected) {
   const enrollmentParams = new URLSearchParams(location.search);
   const selectedLevel = enrollmentParams.get('nivel');
+  const selectedCourse = enrollmentParams.get('curso');
   const selectedPackage = enrollmentParams.get('paquete');
-  const selectedTurn = enrollmentParams.get('turno');
+  const selectedTurn = ['morning', 'evening'].includes(enrollmentParams.get('turno')) ? enrollmentParams.get('turno') : '';
+  const selectedOrigin = ['directo', 'inicio', 'nivel', 'curso', 'paquete', 'horario'].includes(enrollmentParams.get('origen')) ? enrollmentParams.get('origen') : 'directo';
+  const turnLabel = selectedTurn === 'morning' ? 'Turno mañana' : selectedTurn === 'evening' ? 'Turno tarde / noche' : '';
+  const requestType = selectedLevel && selectedCourse && selectedPackage && selectedTurn
+    ? 'Inscripción completa'
+    : selectedPackage && selectedTurn
+      ? 'Consulta por paquete y horario'
+      : selectedPackage
+        ? 'Consulta por paquete'
+        : selectedTurn
+          ? 'Consulta por horario'
+          : selectedCourse
+            ? 'Consulta por curso'
+            : selectedLevel
+              ? 'Consulta por nivel'
+              : 'Información general';
   const levelField = form.querySelector('select[name="nivel"]');
   if (selectedLevel && levelField) {
     const option = Array.from(levelField.options).find((item) => item.value.toLowerCase() === selectedLevel || item.text.toLowerCase() === selectedLevel);
@@ -457,11 +515,16 @@ if (form && form.isConnected) {
     turnstileScript.defer = true;
     document.head.append(turnstileScript);
   }
-  if (selectedPackage || selectedTurn) {
+  if (selectedLevel || selectedCourse || selectedPackage || selectedTurn) {
     const selection = document.createElement('p');
     selection.className = 'form-selection';
-    const turnLabel = selectedTurn === 'morning' ? 'Turno mañana' : selectedTurn === 'evening' ? 'Turno tarde / noche' : '';
-    selection.textContent = `Programa de interés: ${selectedPackage || turnLabel}${selectedLevel ? ` · ${selectedLevel}` : ''}`;
+    const details = [
+      selectedLevel && `Nivel: ${selectedLevel}`,
+      selectedCourse && `Curso: ${selectedCourse}`,
+      selectedPackage && `Paquete: ${selectedPackage}`,
+      turnLabel && `Turno: ${turnLabel}`,
+    ].filter(Boolean);
+    selection.textContent = `${requestType}. ${details.join(' · ')}`;
     form.prepend(selection);
   }
   form.addEventListener('submit', async (event) => {
@@ -476,23 +539,27 @@ if (form && form.isConnected) {
       message.textContent = honeypot.value ? 'No se pudo procesar la solicitud.' : !turnstileToken ? 'Completa la verificación de seguridad para continuar.' : 'Ingresa un celular peruano válido de 9 dígitos que empiece con 9.';
       return;
     }
-    const turnLabel = selectedTurn === 'morning' ? 'Turno mañana' : selectedTurn === 'evening' ? 'Turno tarde / noche' : '';
     try {
       await saveRequest({
         nombre_completo: nameField.value.trim(),
         celular: phoneField.value.trim(),
         nivel: selectedLevel || null,
+        curso: selectedCourse || null,
         paquete: selectedPackage || null,
         turno: turnLabel || null,
+        origen: selectedOrigin,
+        tipo_solicitud: requestType,
         turnstile_token: turnstileToken,
       });
       const whatsappMessage = [
-        'Hola, quiero recibir información e inscribirme en LUMVEA.',
+        `Hola, quiero recibir información de LUMVEA. Tipo de solicitud: ${requestType}.`,
         '',
         'Datos de la solicitud:',
-        `Nivel: ${selectedLevel || 'No especificado'}`,
-        `Paquete: ${selectedPackage || 'No especificado'}`,
-        `Turno: ${turnLabel || 'No especificado'}`,
+        `Origen: ${selectedOrigin}`,
+        ...(selectedLevel ? [`Nivel: ${selectedLevel}`] : []),
+        ...(selectedCourse ? [`Curso: ${selectedCourse}`] : []),
+        ...(selectedPackage ? [`Paquete: ${selectedPackage}`] : []),
+        ...(turnLabel ? [`Turno: ${turnLabel}`] : []),
         `Nombre completo: ${nameField.value.trim()}`,
         `Celular: ${phoneField.value.trim()}`,
       ].join('\n');

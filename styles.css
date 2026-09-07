@@ -116,6 +116,7 @@ a { color: inherit; text-decoration: none; }
 .whatsapp-mark svg { width: 19px; height: 19px; }
 .schedule-contact { margin: 0 0 18px; }
 .form-selection { margin: 0; padding: 11px 13px; border-left: 3px solid var(--orange); background: #fff; color: var(--blue-dark); font-size: .84rem; font-weight: 600; }
+.package-contact { display: inline-block; margin-top: 12px; color: var(--blue-dark); font-size: .84rem; font-weight: 600; }
 .form-consent { display: flex; align-items: flex-start; gap: 9px; color: var(--muted); font-size: .78rem; line-height: 1.45; cursor: pointer; }
 .form-consent input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--blue); }
 .form-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
