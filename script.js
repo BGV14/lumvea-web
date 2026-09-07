@@ -360,6 +360,25 @@ packageFilters.forEach((filter) => {
   });
 });
 
+const legacyLevelByPage = {
+  'primaria.html': 'primaria',
+  'secundaria.html': 'secundaria',
+  'programas.html': 'preuniversitaria',
+};
+const legacyLevel = legacyLevelByPage[currentPage];
+if (legacyLevel) {
+  document.querySelectorAll('.package-card').forEach((card) => {
+    if (card.querySelector('.choose-package')) return;
+    const packageName = card.querySelector('h3')?.textContent.trim();
+    if (!packageName) return;
+    const button = document.createElement('a');
+    button.className = 'choose-package';
+    button.href = `index.html?nivel=${legacyLevel}&paquete=${encodeURIComponent(packageName)}#inscripción`;
+    button.textContent = 'Elegir paquete';
+    card.append(button);
+  });
+}
+
 if (form) {
   const enrollmentParams = new URLSearchParams(location.search);
   const selectedLevel = enrollmentParams.get('nivel');
