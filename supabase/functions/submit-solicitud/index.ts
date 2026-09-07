@@ -77,6 +77,9 @@ serve(async (request) => {
     if (nivel && !['primaria', 'secundaria', 'preuniversitaria'].includes(nivel)) {
       return new Response(JSON.stringify({ error: 'Nivel inválido.' }), { status: 400, headers });
     }
+    if (modalidad && !['weekly', 'monthly'].includes(modalidad)) {
+      return new Response(JSON.stringify({ error: 'Modalidad inválida.' }), { status: 400, headers });
+    }
     if (turno && !['Turno mañana', 'Turno tarde / noche'].includes(turno)) {
       return new Response(JSON.stringify({ error: 'Turno inválido.' }), { status: 400, headers });
     }
