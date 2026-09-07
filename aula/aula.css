@@ -6,6 +6,8 @@ button { cursor:pointer; }
 .login { min-height:100vh; display:grid; place-items:center; padding:24px; }
 .login-card { width:min(100%,430px); padding:42px; background:#fff; border-top:5px solid var(--orange); box-shadow:0 22px 50px rgba(16,33,61,.12); }
 .wordmark { color:var(--blue); font-weight:700; letter-spacing:.06em; }
+.aula-header { display:flex; align-items:center; gap:32px; padding:18px clamp(20px,6vw,110px); background:#fff; border-bottom:1px solid var(--line); }.aula-header img { width:220px; display:block; }.aula-header button { margin-left:auto; border:0; background:transparent; color:var(--ink); font-weight:700; }.aula-header nav { display:flex; gap:22px; }.aula-header a { color:var(--ink); text-decoration:none; font-weight:600; }
+@media (max-width:800px) { .aula-header { flex-wrap:wrap; }.aula-header nav { display:none; width:100%; flex-direction:column; gap:0; border-top:1px solid var(--line); }.aula-header.is-open nav { display:flex; }.aula-header nav a { padding:14px 0; border-bottom:1px solid var(--line); }.aula-header img { width:190px; } }
 .wordmark img { display:block; width:190px; max-width:100%; height:auto; }
 h1 { margin:14px 0 8px; font-size:clamp(2rem,5vw,3rem); line-height:1; }
 p { line-height:1.55; }
