@@ -100,6 +100,7 @@ if (currentPage === 'nivel.html') {
   const levelKey = params.get('nivel') || 'primaria';
   const view = params.get('vista') || 'inicio';
   const selectedCourse = params.get('curso');
+  const selectedCourses = (params.get('cursos') || '').split('|').filter(Boolean);
   const selectedPackage = params.get('paquete');
   const selectedTurn = params.get('turno');
   const selectedOrigin = params.get('origen');
@@ -108,7 +109,7 @@ if (currentPage === 'nivel.html') {
       name: 'Primaria',
       lead: 'Bases firmes, curiosidad y acompañamiento para aprender con confianza.',
       days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-      courses: [['Razonamiento Matemático', 'Matemáticas'], ['Aritmética', 'Matemáticas'], ['Álgebra', 'Matemáticas'], ['Geometría', 'Matemáticas'], ['Lenguaje', 'Comunicación'], ['Comprensión Lectora', 'Comunicación'], ['Razonamiento Verbal', 'Comunicación'], ['Personal Social', 'Ciencias Sociales'], ['Ciencia y Tecnología', 'Ciencias Naturales'], ['Inglés', 'Inglés']],
+      courses: [['Razonamiento Matemático', 'Matemáticas', 1], ['Aritmética', 'Matemáticas', 2], ['Álgebra', 'Matemáticas', 1], ['Geometría', 'Matemáticas', 2], ['Lenguaje', 'Comunicación', 2], ['Comprensión Lectora', 'Comunicación', 2], ['Razonamiento Verbal', 'Comunicación', 1], ['Personal Social', 'Ciencias Sociales', 1], ['Ciencia y Tecnología', 'Ciencias Naturales', 1], ['Inglés', 'Inglés', 2]],
       scheduleRows: [['Aritmética', 'Lenguaje', 'Personal social', 'Inglés', 'Álgebra', 'Simulacro'], ['Geometría', 'Razonamiento matemático', 'Comprensión lectora', 'Comprensión lectora', 'Inglés', ''], ['Ciencia y tecnología', 'Razonamiento verbal', 'Aritmética', 'Geometría', 'Lenguaje', '']],
       packages: [['Matemática', 'S/ 15', 'S/ 45'], ['Comunicación', 'S/ 9', 'S/ 27'], ['Ciencias y social', 'S/ 3', 'S/ 9'], ['Inglés', 'S/ 3', 'S/ 9'], ['Matemática + Inglés', 'S/ 21', 'S/ 63'], ['Comunicación + Inglés', 'S/ 15', 'S/ 45'], ['Ciencias + Inglés', 'S/ 9', 'S/ 27'], ['Matemática + Comunicación + Inglés', 'S/ 33', 'S/ 99'], ['Matemática + Ciencias + Inglés', 'S/ 27', 'S/ 81'], ['Comunicación + Ciencias + Inglés', 'S/ 21', 'S/ 63'], ['Paquete completo', 'S/ 39', 'S/ 117']],
     },
@@ -116,7 +117,7 @@ if (currentPage === 'nivel.html') {
       name: 'Secundaria',
       lead: 'Refuerzo por áreas para avanzar con método hacia nuevos retos académicos.',
       days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-      courses: [['Razonamiento Matemático', 'Matemáticas'], ['Aritmética', 'Matemáticas'], ['Álgebra', 'Matemáticas'], ['Trigonometría', 'Matemáticas'], ['Geometría', 'Matemáticas'], ['Lenguaje', 'Comunicación'], ['Literatura', 'Comunicación'], ['Razonamiento Verbal', 'Comunicación'], ['Física', 'Ciencias Naturales'], ['Química', 'Ciencias Naturales'], ['Biología', 'Ciencias Naturales'], ['Inglés', 'Inglés']],
+      courses: [['Razonamiento Matemático', 'Matemáticas', 2], ['Aritmética', 'Matemáticas', 2], ['Álgebra', 'Matemáticas', 1], ['Trigonometría', 'Matemáticas', 1], ['Geometría', 'Matemáticas', 2], ['Lenguaje', 'Comunicación', 1], ['Literatura', 'Comunicación', 1], ['Razonamiento Verbal', 'Comunicación', 1], ['Física', 'Ciencias Naturales', 2], ['Química', 'Ciencias Naturales', 2], ['Biología', 'Ciencias Naturales', 2], ['Inglés', 'Inglés', 1]],
       scheduleRows: [['Trigonometría', 'Lenguaje', 'Álgebra', 'Física', 'Inglés', 'Razonamiento matemático', 'Simulacro'], ['Geometría', 'Razonamiento matemático', 'Razonamiento verbal', 'Química', 'Literatura', 'Química', ''], ['Física', 'Biología', 'Aritmética', 'Geometría', 'Aritmética', 'Biología', '']],
       packages: [['Matemática', 'S/ 21', 'S/ 63'], ['Comunicación', 'S/ 9', 'S/ 18'], ['Ciencias naturales', 'S/ 15', 'S/ 45'], ['Matemática + Inglés', 'S/ 24', 'S/ 72'], ['Comunicación + Inglés', 'S/ 9', 'S/ 27'], ['Ciencias naturales + Inglés', 'S/ 18', 'S/ 54'], ['Matemática + Comunicación + Inglés', 'S/ 33', 'S/ 99'], ['Matemática + Ciencias + Inglés', 'S/ 42', 'S/ 126'], ['Ciencias + Comunicación + Inglés', 'S/ 27', 'S/ 81'], ['Paquete completo', 'S/ 51', 'S/ 153']],
     },
@@ -124,7 +125,7 @@ if (currentPage === 'nivel.html') {
       name: 'Preuniversitaria',
       lead: 'Cursos, turnos y práctica para organizar una ruta de preparación universitaria.',
       days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-      courses: [['Razonamiento Matemático', 'Matemáticas'], ['Aritmética', 'Matemáticas'], ['Álgebra', 'Matemáticas'], ['Trigonometría', 'Matemáticas'], ['Geometría', 'Matemáticas'], ['Lenguaje', 'Comunicación'], ['Literatura', 'Comunicación'], ['Razonamiento Verbal', 'Comunicación'], ['Psicología', 'Ciencias Sociales'], ['Educación Cívica', 'Ciencias Sociales'], ['Historia del Perú', 'Ciencias Sociales'], ['Historia Universal', 'Ciencias Sociales'], ['Geografía', 'Ciencias Sociales'], ['Economía', 'Ciencias Sociales'], ['Filosofía', 'Ciencias Sociales'], ['Física', 'Ciencias Naturales'], ['Química', 'Ciencias Naturales'], ['Biología', 'Ciencias Naturales'], ['Inglés', 'Inglés']],
+      courses: [['Razonamiento Matemático', 'Matemáticas', 1], ['Aritmética', 'Matemáticas', 2], ['Álgebra', 'Matemáticas', 1], ['Trigonometría', 'Matemáticas', 1], ['Geometría', 'Matemáticas', 2], ['Lenguaje', 'Comunicación', 1], ['Literatura', 'Comunicación', 1], ['Razonamiento Verbal', 'Comunicación', 1], ['Psicología', 'Ciencias Sociales', 1], ['Educación Cívica', 'Ciencias Sociales', 1], ['Historia del Perú', 'Ciencias Sociales', 1], ['Historia Universal', 'Ciencias Sociales', 1], ['Geografía', 'Ciencias Sociales', 1], ['Economía', 'Ciencias Sociales', 1], ['Filosofía', 'Ciencias Sociales', 1], ['Física', 'Ciencias Naturales', 2], ['Química', 'Ciencias Naturales', 2], ['Biología', 'Ciencias Naturales', 2], ['Inglés', 'Inglés', 1]],
       scheduleRows: [['Trigonometría', 'Lenguaje', 'Historia universal', 'Economía', 'Álgebra', 'Aritmética', 'Simulacro'], ['Historia del Perú', 'Razonamiento matemático', 'Razonamiento verbal', 'Química', 'Literatura', 'Física', ''], ['Física', 'Biología', 'Cívica', 'Geometría', 'Filosofía', 'Biología', ''], ['Psicología', 'Química', 'Geografía', 'Aritmética', 'Inglés', 'Geometría', '']],
       packages: [['Matemática', 'S/ 24', 'S/ 70'], ['Comunicación', 'S/ 8', 'S/ 24'], ['Ciencias sociales', 'S/ 24', 'S/ 70'], ['Ciencias naturales', 'S/ 20', 'S/ 60'], ['Matemática + Inglés', 'S/ 28', 'S/ 84'], ['Comunicación + Inglés', 'S/ 12', 'S/ 36'], ['Sociales + Inglés', 'S/ 28', 'S/ 84'], ['Naturales + Inglés', 'S/ 24', 'S/ 60'], ['Matemática + Comunicación + Inglés', 'S/ 40', 'S/ 120'], ['Matemática + Naturales + Inglés', 'S/ 52', 'S/ 156'], ['Naturales + Comunicación + Inglés', 'S/ 36', 'S/ 108'], ['Paquete completo', 'S/ 92', 'S/ 276']],
     },
@@ -134,6 +135,7 @@ if (currentPage === 'nivel.html') {
   const base = `nivel.html?nivel=${levelKey}`;
   const contextParams = new URLSearchParams();
   if (selectedCourse) contextParams.set('curso', selectedCourse);
+  if (selectedCourses.length) contextParams.set('cursos', selectedCourses.join('|'));
   if (selectedPackage) contextParams.set('paquete', selectedPackage);
   if (selectedTurn) contextParams.set('turno', selectedTurn);
   if (selectedOrigin) contextParams.set('origen', selectedOrigin);
@@ -204,6 +206,7 @@ if (currentPage === 'nivel.html') {
     return areas;
   };
   const selectedPackageAreas = packageAreasFor(selectedPackage);
+  const selectedCourseNames = new Set(selectedCourses.map((course) => course.toLowerCase()));
   const subjectsFor = (title) => {
     if (title === 'Paquete completo') return Object.values(subjectGroups).join(' · ');
     const normalizedTitle = title.toLowerCase();
@@ -216,9 +219,41 @@ if (currentPage === 'nivel.html') {
     return subjects.join(' · ');
   };
   const packages = `<section class="level-content section"><p class="eyebrow">PAQUETES</p><h2>Opciones semanales y mensuales.</h2><p class="content-lead">La mensualidad equivale a cuatro semanas del mismo programa.</p><div class="package-controls level-package-controls" role="group" aria-label="Filtrar paquetes"><button class="level-package-filter is-selected" type="button" data-filter="all" aria-pressed="true">Todos</button><button class="level-package-filter" type="button" data-filter="area" aria-pressed="false">Por área</button><button class="level-package-filter" type="button" data-filter="combo" aria-pressed="false">Combinados</button><button class="level-package-filter" type="button" data-filter="complete" aria-pressed="false">Completo</button></div><div class="package-grid">${level.packages.map(([title, weekly, monthly]) => { const type = title === 'Paquete completo' ? 'complete' : title.includes('+') ? 'combo' : 'area'; const weeklyOffer = Number(weekly.replace('S/ ', '')); const monthlyOffer = Number(monthly.replace('S/ ', '')); const weeklyRegular = weeklyOffer + (levelKey === 'preuniversitaria' ? 4 : 3); const monthlyRegular = levelKey === 'preuniversitaria' ? ({ 70: 96, 24: 32, 60: 80, 84: 112, 36: 48, 120: 160, 156: 208, 108: 144, 276: 368 }[monthlyOffer]) : Math.round(monthlyOffer * 4 / 3); return `<article class="package-card level-package-card" data-type="${type}"><p class="package-label">${type === 'complete' ? 'PREPARACIÓN INTEGRAL' : type === 'combo' ? 'COMBINADO' : 'POR ÁREA'} · ${level.name.toUpperCase()}</p><h3>${title}</h3><p class="package-subjects"><b>Cursos:</b> ${subjectsFor(title)}</p><p class="price-row"><span>Semana</span><del>S/ ${weeklyRegular}</del><strong>${weekly}</strong><em>Oferta</em></p><p class="price-row"><span>Mes: 4 sem.</span><del>S/ ${monthlyRegular}</del><strong>${monthly}</strong><em>Oferta</em></p><button class="choose-package" type="button" data-package="${title}">Elegir paquete</button></article>`; }).join('')}</div><p class="package-selection" aria-live="polite"></p></section>`;
+  const blockPrice = levelKey === 'preuniversitaria' ? 4 : 3;
+  const promotionBuilder = `<section class="custom-promotion section"><p class="eyebrow">ARMA TU PROMOCIÓN</p><h2>Combina cursos y crea tu propio paquete.</h2><p class="content-lead">Cada curso incluye uno o dos bloques semanales. La promoción se activa desde tres bloques: descontamos un bloque por semana y, en el mes, pagas solo tres semanas promocionales.</p><div class="promo-course-grid">${level.courses.map(([title, area, blocks]) => `<label class="promo-course-option"><input type="checkbox" data-promo-course data-blocks="${blocks}" value="${title}" /><span><b>${title}</b><small>${area} · ${blocks} ${blocks === 1 ? 'bloque' : 'bloques'}</small></span></label>`).join('')}</div><div class="promo-summary" aria-live="polite">Selecciona cursos para calcular tu promoción.</div><button class="button button-primary custom-promo-continue" type="button" disabled>Continuar con esta promoción</button></section>`;
   const summary = `<section class="level-content section level-start"><p class="eyebrow">EMPIEZA AQUÍ</p><h2>¿Qué quieres revisar?</h2><p class="content-lead">Selecciona una opción para conocer las materias, ver el horario semanal o comparar los paquetes disponibles.</p><div class="overview-links"><a href="${levelUrl('cursos')}">Cursos y materias</a><a href="${levelUrl('horario')}">Horario semanal</a><a href="${levelUrl('paquetes')}">Paquetes y ofertas</a></div></section>`;
-  app.innerHTML = intro + (view === 'cursos' ? courses : view === 'horario' ? schedule : view === 'paquetes' ? packages : summary);
-  if (view === 'horario' && selectedPackageAreas.length) {
+  app.innerHTML = intro + (view === 'cursos' ? courses : view === 'horario' ? schedule : view === 'paquetes' ? packages + promotionBuilder : summary);
+  const promoSummary = document.querySelector('.promo-summary');
+  const promoContinue = document.querySelector('.custom-promo-continue');
+  const updatePromotion = () => {
+    const chosenCourses = Array.from(document.querySelectorAll('[data-promo-course]:checked'));
+    const totalBlocks = chosenCourses.reduce((total, course) => total + Number(course.dataset.blocks), 0);
+    const eligible = totalBlocks >= 3;
+    if (!chosenCourses.length) {
+      promoSummary.textContent = 'Selecciona cursos para calcular tu promoción.';
+      promoContinue.disabled = true;
+      return;
+    }
+    if (!eligible) {
+      promoSummary.textContent = `Has elegido ${totalBlocks} bloques. Agrega al menos un bloque más para activar la promoción.`;
+      promoContinue.disabled = true;
+      return;
+    }
+    const weeklyRegular = totalBlocks * blockPrice;
+    const weeklyOffer = weeklyRegular - blockPrice;
+    const monthlyRegular = weeklyRegular * 4;
+    const monthlyOffer = weeklyOffer * 3;
+    promoSummary.innerHTML = `<strong>${totalBlocks} bloques seleccionados.</strong> Semana: <del>S/ ${weeklyRegular}</del> <b>S/ ${weeklyOffer}</b> · Mes: <del>S/ ${monthlyRegular}</del> <b>S/ ${monthlyOffer}</b>.`;
+    promoContinue.disabled = false;
+    promoContinue.dataset.courses = chosenCourses.map((course) => course.value).join('|');
+    promoContinue.dataset.package = `Promoción personalizada · S/ ${weeklyOffer}/semana · S/ ${monthlyOffer}/mes`;
+  };
+  document.querySelectorAll('[data-promo-course]').forEach((course) => course.addEventListener('change', updatePromotion));
+  promoContinue?.addEventListener('click', () => {
+    const promotionParams = new URLSearchParams({ nivel: levelKey, vista: 'horario', origen: 'paquete', paquete: promoContinue.dataset.package, cursos: promoContinue.dataset.courses });
+    location.href = `nivel.html?${promotionParams}`;
+  });
+  if (view === 'horario' && (selectedPackageAreas.length || selectedCourseNames.size)) {
     const packageLegend = document.createElement('p');
     packageLegend.className = 'schedule-package-legend';
     packageLegend.innerHTML = '<span class="schedule-key schedule-key-included">Incluido en tu paquete</span><span class="schedule-key schedule-key-excluded">No incluido en tu paquete</span>';
@@ -226,7 +261,7 @@ if (currentPage === 'nivel.html') {
     document.querySelectorAll('.level-table td').forEach((cell) => {
       const subject = cell.textContent.trim();
       if (!subject || subject === '-' || subject === 'Receso') return;
-      const included = selectedPackageAreas.includes(scheduleAreaFor(subject));
+      const included = selectedCourseNames.size ? selectedCourseNames.has(subject.toLowerCase()) : selectedPackageAreas.includes(scheduleAreaFor(subject));
       cell.classList.add(included ? 'is-package-subject' : 'is-package-excluded');
       cell.setAttribute('aria-label', `${subject}: ${included ? 'incluido en tu paquete' : 'no incluido en tu paquete'}`);
     });
@@ -250,17 +285,18 @@ if (currentPage === 'nivel.html') {
       card.hidden = !card.querySelector('.package-subjects').textContent.includes(selectedCourse);
     });
   }
-  if (view === 'horario' && (selectedCourse || selectedPackage)) {
+  if (view === 'horario' && (selectedCourse || selectedCourses.length || selectedPackage)) {
     const scheduleContext = document.createElement('p');
     scheduleContext.className = 'form-selection';
     scheduleContext.textContent = selectedPackage
-      ? `Paquete elegido: ${selectedPackage}${selectedCourse ? ` · Curso de interés: ${selectedCourse}` : ''}. Ahora elige un turno.`
+      ? `Paquete elegido: ${selectedPackage}${selectedCourses.length ? ` · Cursos: ${selectedCourses.join(', ')}` : selectedCourse ? ` · Curso de interés: ${selectedCourse}` : ''}. Ahora elige un turno.`
       : `Curso de interés: ${selectedCourse}. Elige el turno que prefieras.`;
     document.querySelector('.shift-switch')?.before(scheduleContext);
   }
   const enrollmentUrlForShift = (shift) => {
     const enrollmentParams = new URLSearchParams({ origen: 'horario', nivel: levelKey, turno: shift });
     if (selectedCourse) enrollmentParams.set('curso', selectedCourse);
+    if (selectedCourses.length) enrollmentParams.set('cursos', selectedCourses.join('|'));
     if (selectedPackage) enrollmentParams.set('paquete', selectedPackage);
     return `inscripcion.html?${enrollmentParams}#inscripción`;
   };
@@ -459,7 +495,8 @@ if (legacyLevel) {
 if (form && form.isConnected) {
   const enrollmentParams = new URLSearchParams(location.search);
   const selectedLevel = enrollmentParams.get('nivel');
-  const selectedCourse = enrollmentParams.get('curso');
+  const selectedCourses = (enrollmentParams.get('cursos') || '').split('|').filter(Boolean);
+  const selectedCourse = selectedCourses.join(', ') || enrollmentParams.get('curso');
   const selectedPackage = enrollmentParams.get('paquete');
   const selectedTurn = ['morning', 'evening'].includes(enrollmentParams.get('turno')) ? enrollmentParams.get('turno') : '';
   const selectedOrigin = ['directo', 'inicio', 'nivel', 'curso', 'paquete', 'horario'].includes(enrollmentParams.get('origen')) ? enrollmentParams.get('origen') : 'directo';
