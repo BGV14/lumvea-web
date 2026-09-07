@@ -273,10 +273,23 @@ if (currentPage === 'nivel.html') {
     morning: ['08:00 - 09:30', '09:30 - 09:50', '09:50 - 11:20', '11:20 - 11:40', '11:40 - 13:10', '13:10 - 13:30', '13:30 - 15:00'].slice(0, scheduleRows.length),
     evening: ['15:00 - 16:30', '16:30 - 16:50', '16:50 - 18:20', '18:20 - 18:40', '18:40 - 20:10', '20:10 - 20:30', '20:30 - 22:00'].slice(0, scheduleRows.length),
   };
+  const mobileSchedule = document.createElement('section');
+  mobileSchedule.className = 'mobile-schedule';
+  mobileSchedule.setAttribute('aria-label', `Horario semanal de ${level.name}`);
+  mobileSchedule.innerHTML = `<div class="mobile-schedule-days" role="tablist" aria-label="Elegir día">${level.days.map((day, index) => `<button type="button" role="tab" aria-selected="${index === 0}" data-schedule-day="${index}">${day}</button>`).join('')}</div><div class="mobile-schedule-panels">${level.days.map((day, dayIndex) => `<section role="tabpanel" data-schedule-panel="${dayIndex}"${dayIndex ? ' hidden' : ''}><h3>${day}</h3>${scheduleRows.map((row, rowIndex) => { const subject = row.cells[dayIndex] || '-'; const displaySubject = row.isBreak && subject === '-' && dayIndex < recessDays ? 'Receso' : subject; const included = selectedPackageAreas.includes(scheduleAreaFor(subject)); const state = selectedPackageAreas.length && !row.isBreak && subject !== '-' ? included ? ' is-package-subject' : ' is-package-excluded' : ''; return `<div class="mobile-schedule-row"><time data-mobile-time="${rowIndex}">${shiftTimes.morning[rowIndex]}</time><p class="mobile-schedule-subject${row.isBreak ? ' is-break' : ''}${state}">${displaySubject}</p></div>`; }).join('')}</section>`).join('')}</div>`;
+  document.querySelector('.level-table')?.after(mobileSchedule);
+  document.querySelectorAll('[data-schedule-day]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const selectedDay = button.dataset.scheduleDay;
+      document.querySelectorAll('[data-schedule-day]').forEach((item) => item.setAttribute('aria-selected', String(item === button)));
+      document.querySelectorAll('[data-schedule-panel]').forEach((panel) => { panel.hidden = panel.dataset.schedulePanel !== selectedDay; });
+    });
+  });
   document.querySelectorAll('.shift-button').forEach((button) => {
     button.addEventListener('click', () => {
       document.querySelectorAll('.shift-button').forEach((item) => item.classList.toggle('is-selected', item === button));
       document.querySelectorAll('[data-time]').forEach((cell) => { cell.textContent = shiftTimes[button.dataset.shift][cell.dataset.time]; });
+      document.querySelectorAll('[data-mobile-time]').forEach((time) => { time.textContent = shiftTimes[button.dataset.shift][time.dataset.mobileTime]; });
       shiftContact.href = enrollmentUrlForShift(button.dataset.shift);
     });
   });
