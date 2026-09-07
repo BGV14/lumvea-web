@@ -108,6 +108,49 @@ if (currentPage === 'nivel.html') {
   const selectedPrice = params.get('precio');
   const selectedCadence = params.get('modalidad');
   const selectedOrigin = params.get('origen');
+  const packageCatalog = {
+    primaria: [
+      ['Paquete Matemático', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría'], 18, 15, 60, 45],
+      ['Paquete Comunicación', ['Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal'], 12, 9, 36, 27],
+      ['Paquete Ciencias Naturales + Ciencias Sociales', ['Ciencia y Tecnología', 'Personal Social'], 6, 3, 12, 9],
+      ['Paquete Inglés', ['Inglés'], 6, 3, 12, 9],
+      ['Paquete Matemático + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Inglés'], 24, 21, 84, 63],
+      ['Paquete Comunicación + Inglés', ['Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Inglés'], 18, 15, 60, 45],
+      ['Paquete Ciencias Naturales + Ciencias Sociales + Inglés', ['Ciencia y Tecnología', 'Personal Social', 'Inglés'], 12, 9, 36, 27],
+      ['Paquete Matemático + Comunicación + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Inglés'], 36, 33, 132, 99],
+      ['Paquete Matemático + Ciencias Naturales + Ciencias Sociales + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Ciencia y Tecnología', 'Personal Social', 'Inglés'], 36, 33, 132, 99],
+      ['Paquete Comunicación + Ciencias Naturales + Ciencias Sociales + Inglés', ['Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Ciencia y Tecnología', 'Personal Social', 'Inglés'], 24, 21, 84, 63],
+      ['Paquete Completo', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Ciencia y Tecnología', 'Personal Social', 'Inglés'], 42, 39, 156, 117],
+    ],
+    secundaria: [
+      ['Paquete Matemático', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría'], 24, 21, 84, 63],
+      ['Paquete Comunicación', ['Lenguaje', 'Literatura', 'Razonamiento Verbal'], 9, 6, 24, 18],
+      ['Paquete Ciencias Naturales', ['Física', 'Química', 'Biología'], 18, 15, 60, 45],
+      ['Paquete Inglés', ['Inglés'], null, null, 12, 9],
+      ['Paquete Matemático + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Inglés'], 27, 24, 96, 72],
+      ['Paquete Comunicación + Inglés', ['Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 12, 9, 36, 27],
+      ['Paquete Ciencias Naturales + Inglés', ['Física', 'Química', 'Biología', 'Inglés'], 21, 18, 72, 54],
+      ['Paquete Matemático + Comunicación + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 36, 33, 132, 99],
+      ['Paquete Matemático + Ciencias Naturales + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Física', 'Química', 'Biología', 'Inglés'], 45, 42, 168, 126],
+      ['Paquete Ciencias Naturales + Comunicación + Inglés', ['Física', 'Química', 'Biología', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 30, 27, 108, 81],
+      ['Paquete Completo', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Física', 'Química', 'Biología', 'Inglés'], 54, 51, 204, 153],
+    ],
+    preuniversitaria: [
+      ['Paquete Matemático', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría'], 28, 24, 96, 72],
+      ['Paquete Comunicación', ['Lenguaje', 'Literatura', 'Razonamiento Verbal'], 12, 8, 32, 24],
+      ['Paquete Ciencias Sociales', ['Psicología', 'Educación Cívica', 'Historia del Perú', 'Historia Universal', 'Geografía', 'Economía', 'Filosofía'], 28, 24, 96, 72],
+      ['Paquete Ciencias Naturales', ['Física', 'Química', 'Biología'], 24, 20, 80, 60],
+      ['Paquete Inglés', ['Inglés'], null, null, 16, 12],
+      ['Paquete Matemático + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Inglés'], 32, 28, 112, 84],
+      ['Paquete Comunicación + Inglés', ['Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 16, 12, 48, 36],
+      ['Paquete Ciencias Sociales + Inglés', ['Psicología', 'Educación Cívica', 'Historia del Perú', 'Historia Universal', 'Geografía', 'Economía', 'Filosofía', 'Inglés'], 32, 28, 112, 84],
+      ['Paquete Ciencias Naturales + Inglés', ['Física', 'Química', 'Biología', 'Inglés'], 28, 24, 96, 72],
+      ['Paquete Matemático + Comunicación + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 44, 40, 160, 120],
+      ['Paquete Matemático + Ciencias Naturales + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Física', 'Química', 'Biología', 'Inglés'], 56, 52, 208, 156],
+      ['Paquete Ciencias Naturales + Comunicación + Inglés', ['Física', 'Química', 'Biología', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 40, 36, 144, 108],
+      ['Paquete Completo', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Psicología', 'Educación Cívica', 'Historia del Perú', 'Historia Universal', 'Geografía', 'Economía', 'Filosofía', 'Física', 'Química', 'Biología', 'Inglés'], 96, 92, 368, 276],
+    ],
+  };
   const levels = {
     primaria: {
       name: 'Primaria',
@@ -115,7 +158,7 @@ if (currentPage === 'nivel.html') {
       days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
       courses: [['Razonamiento Matemático', 'Matemáticas', 1], ['Aritmética', 'Matemáticas', 2], ['Álgebra', 'Matemáticas', 1], ['Geometría', 'Matemáticas', 2], ['Lenguaje', 'Comunicación', 2], ['Comprensión Lectora', 'Comunicación', 2], ['Razonamiento Verbal', 'Comunicación', 1], ['Personal Social', 'Ciencias Sociales', 1], ['Ciencia y Tecnología', 'Ciencias Naturales', 1], ['Inglés', 'Inglés', 2]],
       scheduleRows: [['Aritmética', 'Lenguaje', 'Personal social', 'Inglés', 'Álgebra', 'Simulacro'], ['Geometría', 'Razonamiento matemático', 'Comprensión lectora', 'Comprensión lectora', 'Inglés', ''], ['Ciencia y tecnología', 'Razonamiento verbal', 'Aritmética', 'Geometría', 'Lenguaje', '']],
-      packages: [['Matemática', 'S/ 15', 'S/ 45'], ['Comunicación', 'S/ 9', 'S/ 27'], ['Ciencias y social', 'S/ 3', 'S/ 9'], ['Inglés', 'S/ 3', 'S/ 9'], ['Matemática + Inglés', 'S/ 21', 'S/ 63'], ['Comunicación + Inglés', 'S/ 15', 'S/ 45'], ['Ciencias + Inglés', 'S/ 9', 'S/ 27'], ['Matemática + Comunicación + Inglés', 'S/ 33', 'S/ 99'], ['Matemática + Ciencias + Inglés', 'S/ 27', 'S/ 81'], ['Comunicación + Ciencias + Inglés', 'S/ 21', 'S/ 63'], ['Paquete completo', 'S/ 39', 'S/ 117']],
+      packages: packageCatalog.primaria,
     },
     secundaria: {
       name: 'Secundaria',
@@ -123,7 +166,7 @@ if (currentPage === 'nivel.html') {
       days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
       courses: [['Razonamiento Matemático', 'Matemáticas', 2], ['Aritmética', 'Matemáticas', 2], ['Álgebra', 'Matemáticas', 1], ['Trigonometría', 'Matemáticas', 1], ['Geometría', 'Matemáticas', 2], ['Lenguaje', 'Comunicación', 1], ['Literatura', 'Comunicación', 1], ['Razonamiento Verbal', 'Comunicación', 1], ['Física', 'Ciencias Naturales', 2], ['Química', 'Ciencias Naturales', 2], ['Biología', 'Ciencias Naturales', 2], ['Inglés', 'Inglés', 1]],
       scheduleRows: [['Trigonometría', 'Lenguaje', 'Álgebra', 'Física', 'Inglés', 'Razonamiento matemático', 'Simulacro'], ['Geometría', 'Razonamiento matemático', 'Razonamiento verbal', 'Química', 'Literatura', 'Química', ''], ['Física', 'Biología', 'Aritmética', 'Geometría', 'Aritmética', 'Biología', '']],
-      packages: [['Matemática', 'S/ 21', 'S/ 63'], ['Comunicación', 'S/ 9', 'S/ 18'], ['Ciencias naturales', 'S/ 15', 'S/ 45'], ['Matemática + Inglés', 'S/ 24', 'S/ 72'], ['Comunicación + Inglés', 'S/ 9', 'S/ 27'], ['Ciencias naturales + Inglés', 'S/ 18', 'S/ 54'], ['Matemática + Comunicación + Inglés', 'S/ 33', 'S/ 99'], ['Matemática + Ciencias + Inglés', 'S/ 42', 'S/ 126'], ['Ciencias + Comunicación + Inglés', 'S/ 27', 'S/ 81'], ['Paquete completo', 'S/ 51', 'S/ 153']],
+      packages: packageCatalog.secundaria,
     },
     preuniversitaria: {
       name: 'Preuniversitaria',
@@ -131,10 +174,12 @@ if (currentPage === 'nivel.html') {
       days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
       courses: [['Razonamiento Matemático', 'Matemáticas', 1], ['Aritmética', 'Matemáticas', 2], ['Álgebra', 'Matemáticas', 1], ['Trigonometría', 'Matemáticas', 1], ['Geometría', 'Matemáticas', 2], ['Lenguaje', 'Comunicación', 1], ['Literatura', 'Comunicación', 1], ['Razonamiento Verbal', 'Comunicación', 1], ['Psicología', 'Ciencias Sociales', 1], ['Educación Cívica', 'Ciencias Sociales', 1], ['Historia del Perú', 'Ciencias Sociales', 1], ['Historia Universal', 'Ciencias Sociales', 1], ['Geografía', 'Ciencias Sociales', 1], ['Economía', 'Ciencias Sociales', 1], ['Filosofía', 'Ciencias Sociales', 1], ['Física', 'Ciencias Naturales', 2], ['Química', 'Ciencias Naturales', 2], ['Biología', 'Ciencias Naturales', 2], ['Inglés', 'Inglés', 1]],
       scheduleRows: [['Trigonometría', 'Lenguaje', 'Historia universal', 'Economía', 'Álgebra', 'Aritmética', 'Simulacro'], ['Historia del Perú', 'Razonamiento matemático', 'Razonamiento verbal', 'Química', 'Literatura', 'Física', ''], ['Física', 'Biología', 'Cívica', 'Geometría', 'Filosofía', 'Biología', ''], ['Psicología', 'Química', 'Geografía', 'Aritmética', 'Inglés', 'Geometría', '']],
-      packages: [['Matemática', 'S/ 24', 'S/ 70'], ['Comunicación', 'S/ 8', 'S/ 24'], ['Ciencias sociales', 'S/ 24', 'S/ 70'], ['Ciencias naturales', 'S/ 20', 'S/ 60'], ['Matemática + Inglés', 'S/ 28', 'S/ 84'], ['Comunicación + Inglés', 'S/ 12', 'S/ 36'], ['Sociales + Inglés', 'S/ 28', 'S/ 84'], ['Naturales + Inglés', 'S/ 24', 'S/ 60'], ['Matemática + Comunicación + Inglés', 'S/ 40', 'S/ 120'], ['Matemática + Naturales + Inglés', 'S/ 52', 'S/ 156'], ['Naturales + Comunicación + Inglés', 'S/ 36', 'S/ 108'], ['Paquete completo', 'S/ 92', 'S/ 276']],
+      packages: packageCatalog.preuniversitaria,
     },
   };
   const level = levels[levelKey] || levels.primaria;
+  const officialPackages = level.packages;
+  level.packages = officialPackages.map(([title, coursesInPackage, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer]) => [title, weeklyOffer === null ? 'No disponible' : `S/ ${weeklyOffer}`, `S/ ${monthlyOffer}`]);
   const app = document.querySelector('#level-interface');
   const base = `nivel.html?nivel=${levelKey}`;
   const contextParams = new URLSearchParams();
@@ -201,7 +246,7 @@ if (currentPage === 'nivel.html') {
   };
   const packageAreasFor = (packageName) => {
     if (!level.packages.some(([title]) => title === packageName)) return [];
-    if (packageName === 'Paquete completo') return Object.keys(subjectGroups);
+    if (packageName === 'Paquete Completo') return Object.keys(subjectGroups);
     const normalizedPackage = packageName.toLowerCase();
     const areas = [];
     if (normalizedPackage.includes('matemática')) areas.push('math');
@@ -212,11 +257,9 @@ if (currentPage === 'nivel.html') {
     return areas;
   };
   const normalizeCourse = (course) => ({ 'cívica': 'educación cívica' }[course.toLowerCase()] || course.toLowerCase());
-  const courseNamesForPackage = (packageName) => level.courses
-    .filter(([course]) => packageAreasFor(packageName).includes(scheduleAreaFor(course)))
-    .map(([course]) => course);
+  const courseNamesForPackage = (packageName) => officialPackages.find(([title]) => title === packageName)?.[1] || [];
   const subjectsFor = (title) => {
-    if (title === 'Paquete completo') return Object.values(subjectGroups).join(' · ');
+    if (title === 'Paquete Completo') return Object.values(subjectGroups).join(' · ');
     const normalizedTitle = title.toLowerCase();
     const subjects = [];
     if (normalizedTitle.includes('matemática')) subjects.push(subjectGroups.math);
@@ -228,13 +271,10 @@ if (currentPage === 'nivel.html') {
   };
   const packages = `<section class="level-content section"><p class="eyebrow">PAQUETES</p><h2>Opciones semanales y mensuales.</h2><p class="content-lead">La mensualidad equivale a cuatro semanas del mismo programa.</p><div class="package-controls level-package-controls" role="group" aria-label="Filtrar paquetes"><button class="level-package-filter is-selected" type="button" data-filter="all" aria-pressed="true">Todos</button><button class="level-package-filter" type="button" data-filter="area" aria-pressed="false">Por área</button><button class="level-package-filter" type="button" data-filter="combo" aria-pressed="false">Combinados</button><button class="level-package-filter" type="button" data-filter="complete" aria-pressed="false">Completo</button></div><div class="package-grid">${level.packages.map(([title, weekly, monthly]) => { const type = title === 'Paquete completo' ? 'complete' : title.includes('+') ? 'combo' : 'area'; const weeklyOffer = Number(weekly.replace('S/ ', '')); const monthlyOffer = Number(monthly.replace('S/ ', '')); const weeklyRegular = weeklyOffer + (levelKey === 'preuniversitaria' ? 4 : 3); const monthlyRegular = levelKey === 'preuniversitaria' ? ({ 70: 96, 24: 32, 60: 80, 84: 112, 36: 48, 120: 160, 156: 208, 108: 144, 276: 368 }[monthlyOffer]) : Math.round(monthlyOffer * 4 / 3); return `<article class="package-card level-package-card" data-type="${type}"><p class="package-label">${type === 'complete' ? 'PREPARACIÓN INTEGRAL' : type === 'combo' ? 'COMBINADO' : 'POR ÁREA'} · ${level.name.toUpperCase()}</p><h3>${title}</h3><p class="package-subjects"><b>Cursos:</b> ${subjectsFor(title)}</p><p class="price-row"><span>Semana</span><del>S/ ${weeklyRegular}</del><strong>${weekly}</strong><em>Oferta</em></p><p class="price-row"><span>Mes: 4 sem.</span><del>S/ ${monthlyRegular}</del><strong>${monthly}</strong><em>Oferta</em></p><button class="choose-package" type="button" data-package="${title}">Elegir paquete</button></article>`; }).join('')}</div><p class="package-selection" aria-live="polite"></p></section>`;
   const blockPrice = levelKey === 'preuniversitaria' ? 4 : 3;
-  const packageOfferFor = (packageName) => {
-    const coursesInPackage = courseNamesForPackage(packageName);
-    const blocks = coursesInPackage.reduce((total, course) => total + (level.courses.find(([title]) => title === course)?.[2] || 0), 0);
-    const weeklyRegular = blocks * blockPrice;
-    const weeklyOffer = coursesInPackage.length > 1 ? weeklyRegular - blockPrice : weeklyRegular;
-    return { courses: coursesInPackage, weeklyRegular, weeklyOffer, monthlyOffer: weeklyOffer * 3 };
-  };
+  function packageOfferFor(packageName) {
+    const [, coursesInPackage, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer] = officialPackages.find(([title]) => title === packageName) || [];
+    return { courses: coursesInPackage || [], weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer };
+  }
   const predefinedPackageForCourses = (coursesToMatch) => {
     const normalizedCourses = [...coursesToMatch].sort().join('|');
     return level.packages.find(([packageName]) => courseNamesForPackage(packageName).sort().join('|') === normalizedCourses)?.[0] || '';
@@ -247,8 +287,10 @@ if (currentPage === 'nivel.html') {
     const offer = packageOfferFor(card.querySelector('h3').textContent.trim());
     const priceRows = card.querySelectorAll('.price-row');
     if (!priceRows.length) return;
-    priceRows[0].innerHTML = `<span>Semana</span><del>S/ ${offer.weeklyRegular}</del><strong>S/ ${offer.weeklyOffer}</strong><em>Oferta</em>`;
-    priceRows[1].innerHTML = `<span>Mes: 3 sem.</span><del>S/ ${offer.weeklyRegular * 4}</del><strong>S/ ${offer.monthlyOffer}</strong><em>Oferta</em>`;
+    priceRows[0].innerHTML = offer.weeklyOffer === null
+      ? '<span>Semana</span><strong>No disponible</strong>'
+      : `<span>Semana</span><del>S/ ${offer.weeklyRegular}</del><strong>S/ ${offer.weeklyOffer}</strong><em>Oferta</em>`;
+    priceRows[1].innerHTML = `<span>Mes: 4 sem.</span><del>S/ ${offer.monthlyRegular}</del><strong>S/ ${offer.monthlyOffer}</strong><em>Oferta</em>`;
   });
   const promoSummary = document.querySelector('.promo-summary');
   const promoContinue = document.querySelector('.custom-promo-continue');
@@ -373,9 +415,29 @@ if (currentPage === 'nivel.html') {
       });
     };
     const renderSelectionSummary = () => {
-      const promotion = calculatePromotion(activeCourses);
       const predefinedPackage = predefinedPackageForCourses(activeCourses);
-      activePackage = predefinedPackage || 'Promoción personalizada';
+      if (predefinedPackage) {
+        const offer = packageOfferFor(predefinedPackage);
+        activePackage = predefinedPackage;
+        if (offer.weeklyOffer === null) activeCadence = 'monthly';
+        const selectedPrice = activeCadence === 'monthly' ? offer.monthlyOffer : offer.weeklyOffer;
+        activePrice = `S/ ${selectedPrice} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
+        frequency.hidden = offer.weeklyOffer === null;
+        frequency.querySelectorAll('button').forEach((button) => {
+          const weekly = button.dataset.scheduleFrequency === 'weekly';
+          button.classList.toggle('is-selected', weekly ? activeCadence === 'weekly' : activeCadence === 'monthly');
+          button.setAttribute('aria-pressed', String(weekly ? activeCadence === 'weekly' : activeCadence === 'monthly'));
+          button.textContent = weekly ? `Semanal · S/ ${offer.weeklyOffer}` : `Mensual · S/ ${offer.monthlyOffer}`;
+        });
+        priceSummary.innerHTML = `${offer.weeklyOffer === null ? '<b>Paquete mensual.</b>' : `<b>Semana:</b> <del>S/ ${offer.weeklyRegular}</del> S/ ${offer.weeklyOffer}`} · <b>Mes: 4 sem.</b> <del>S/ ${offer.monthlyRegular}</del> S/ ${offer.monthlyOffer}.`;
+        confirmSelection.href = enrollmentUrlForShift(activeTurn);
+        confirmSelection.setAttribute('aria-disabled', 'false');
+        scheduleContext.hidden = false;
+        scheduleContext.textContent = `Paquete actual: ${activePackage}`;
+        return;
+      }
+      const promotion = calculatePromotion(activeCourses);
+      activePackage = 'Promoción personalizada';
       if (!promotion.valid) {
         activePrice = '';
         priceSummary.textContent = activeCourses.length ? `${promotion.blocks} bloques seleccionados. Agrega cursos hasta llegar a 3 bloques para activar la promoción.` : 'Selecciona al menos un curso.';
@@ -470,7 +532,9 @@ if (currentPage === 'nivel.html') {
     actions.className = 'package-turn-actions';
     actions.innerHTML = '<button class="choose-package" type="button" data-turn="morning">Turno mañana</button><button class="choose-package" type="button" data-turn="evening">Turno tarde / noche</button>';
     actions.querySelectorAll('button').forEach((turnButton) => turnButton.addEventListener('click', () => {
-      const packageParams = new URLSearchParams({ nivel: levelKey, vista: 'horario', origen: 'paquete', paquete: packageName, cursos: offer.courses.join('|'), turno: turnButton.dataset.turn, precio: `S/ ${offer.weeklyOffer} / semana`, modalidad: 'weekly' });
+      const cadence = offer.weeklyOffer === null ? 'monthly' : 'weekly';
+      const price = cadence === 'weekly' ? offer.weeklyOffer : offer.monthlyOffer;
+      const packageParams = new URLSearchParams({ nivel: levelKey, vista: 'horario', origen: 'paquete', paquete: packageName, cursos: offer.courses.join('|'), turno: turnButton.dataset.turn, precio: `S/ ${price} / ${cadence === 'weekly' ? 'semana' : 'mes'}`, modalidad: cadence });
       location.href = `nivel.html?${packageParams}`;
     }));
     button.replaceWith(actions);

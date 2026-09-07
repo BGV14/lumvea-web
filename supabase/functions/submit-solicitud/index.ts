@@ -33,6 +33,29 @@ const courseBlocks = {
   preuniversitaria: { 'Razonamiento Matemático': 1, Aritmética: 2, Álgebra: 1, Trigonometría: 1, Geometría: 2, Lenguaje: 1, Literatura: 1, 'Razonamiento Verbal': 1, Psicología: 1, 'Educación Cívica': 1, 'Historia del Perú': 1, 'Historia Universal': 1, Geografía: 1, Economía: 1, Filosofía: 1, Física: 2, Química: 2, Biología: 2, Inglés: 1 },
 } as const;
 
+const packageCatalog = {
+  primaria: [
+    ['Paquete Matemático', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría'], 15, 45], ['Paquete Comunicación', ['Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal'], 9, 27], ['Paquete Ciencias Naturales + Ciencias Sociales', ['Ciencia y Tecnología', 'Personal Social'], 3, 9], ['Paquete Inglés', ['Inglés'], 3, 9], ['Paquete Matemático + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Inglés'], 21, 63], ['Paquete Comunicación + Inglés', ['Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Inglés'], 15, 45], ['Paquete Ciencias Naturales + Ciencias Sociales + Inglés', ['Ciencia y Tecnología', 'Personal Social', 'Inglés'], 9, 27], ['Paquete Matemático + Comunicación + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Inglés'], 33, 99], ['Paquete Matemático + Ciencias Naturales + Ciencias Sociales + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Ciencia y Tecnología', 'Personal Social', 'Inglés'], 33, 99], ['Paquete Comunicación + Ciencias Naturales + Ciencias Sociales + Inglés', ['Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Ciencia y Tecnología', 'Personal Social', 'Inglés'], 21, 63], ['Paquete Completo', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría', 'Lenguaje', 'Comprensión Lectora', 'Razonamiento Verbal', 'Ciencia y Tecnología', 'Personal Social', 'Inglés'], 39, 117],
+  ],
+  secundaria: [
+    ['Paquete Matemático', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría'], 21, 63], ['Paquete Comunicación', ['Lenguaje', 'Literatura', 'Razonamiento Verbal'], 6, 18], ['Paquete Ciencias Naturales', ['Física', 'Química', 'Biología'], 15, 45], ['Paquete Inglés', ['Inglés'], null, 9], ['Paquete Matemático + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Inglés'], 24, 72], ['Paquete Comunicación + Inglés', ['Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 9, 27], ['Paquete Ciencias Naturales + Inglés', ['Física', 'Química', 'Biología', 'Inglés'], 18, 54], ['Paquete Matemático + Comunicación + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 33, 99], ['Paquete Matemático + Ciencias Naturales + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Física', 'Química', 'Biología', 'Inglés'], 42, 126], ['Paquete Ciencias Naturales + Comunicación + Inglés', ['Física', 'Química', 'Biología', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 27, 81], ['Paquete Completo', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Física', 'Química', 'Biología', 'Inglés'], 51, 153],
+  ],
+  preuniversitaria: [
+    ['Paquete Matemático', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría'], 24, 72], ['Paquete Comunicación', ['Lenguaje', 'Literatura', 'Razonamiento Verbal'], 8, 24], ['Paquete Ciencias Sociales', ['Psicología', 'Educación Cívica', 'Historia del Perú', 'Historia Universal', 'Geografía', 'Economía', 'Filosofía'], 24, 72], ['Paquete Ciencias Naturales', ['Física', 'Química', 'Biología'], 20, 60], ['Paquete Inglés', ['Inglés'], null, 12], ['Paquete Matemático + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Inglés'], 28, 84], ['Paquete Comunicación + Inglés', ['Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 12, 36], ['Paquete Ciencias Sociales + Inglés', ['Psicología', 'Educación Cívica', 'Historia del Perú', 'Historia Universal', 'Geografía', 'Economía', 'Filosofía', 'Inglés'], 28, 84], ['Paquete Ciencias Naturales + Inglés', ['Física', 'Química', 'Biología', 'Inglés'], 24, 72], ['Paquete Matemático + Comunicación + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 40, 120], ['Paquete Matemático + Ciencias Naturales + Inglés', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Física', 'Química', 'Biología', 'Inglés'], 52, 156], ['Paquete Ciencias Naturales + Comunicación + Inglés', ['Física', 'Química', 'Biología', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Inglés'], 36, 108], ['Paquete Completo', ['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Trigonometría', 'Geometría', 'Lenguaje', 'Literatura', 'Razonamiento Verbal', 'Psicología', 'Educación Cívica', 'Historia del Perú', 'Historia Universal', 'Geografía', 'Economía', 'Filosofía', 'Física', 'Química', 'Biología', 'Inglés'], 92, 276],
+  ],
+} as const;
+
+function officialPackage(level: keyof typeof packageCatalog, packageName: string, courseText: string, cadence: string) {
+  const packageEntry = packageCatalog[level].find(([name]) => name === packageName);
+  if (!packageEntry) return null;
+  const [name, catalogCourses, weeklyPrice, monthlyPrice] = packageEntry;
+  const courses = courseText.split(',').map((course) => course.trim()).filter(Boolean);
+  if (courses.length !== catalogCourses.length || [...courses].sort().join('|') !== [...catalogCourses].sort().join('|')) throw new Error('Cursos inválidos para el paquete.');
+  const confirmedCadence = weeklyPrice === null ? 'monthly' : cadence === 'monthly' ? 'monthly' : 'weekly';
+  const price = confirmedCadence === 'weekly' ? weeklyPrice : monthlyPrice;
+  return { courses: [...catalogCourses], blocks: null, packageName: name, price: `S/ ${price} / ${confirmedCadence === 'weekly' ? 'semana' : 'mes'}`, cadence: confirmedCadence };
+}
+
 function calculatePromotion(level: keyof typeof courseBlocks, courseText: string, cadence: string) {
   const courses = courseText.split(',').map((course) => course.trim()).filter(Boolean);
   const uniqueCourses = [...new Set(courses)];
@@ -83,9 +106,13 @@ serve(async (request) => {
     if (turno && !['Turno mañana', 'Turno tarde / noche'].includes(turno)) {
       return new Response(JSON.stringify({ error: 'Turno inválido.' }), { status: 400, headers });
     }
-    let promotion: ReturnType<typeof calculatePromotion> | null = null;
+    let promotion: ReturnType<typeof calculatePromotion> | ReturnType<typeof officialPackage> = null;
     try {
-      promotion = nivel && curso ? calculatePromotion(nivel as keyof typeof courseBlocks, curso, modalidad) : null;
+      if (nivel && curso) {
+        const confirmedPackage = paquete ? officialPackage(nivel as keyof typeof packageCatalog, paquete, curso, modalidad) : null;
+        if (paquete && !confirmedPackage && !paquete.startsWith('Promoción ')) throw new Error('Paquete inválido.');
+        promotion = confirmedPackage || calculatePromotion(nivel as keyof typeof courseBlocks, curso, modalidad);
+      }
     } catch (error) {
       return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Promoción inválida.' }), { status: 400, headers });
     }
