@@ -315,8 +315,8 @@ if (currentPage === 'nivel.html') {
     }
     const weeklyRegular = totalBlocks * blockPrice;
     const weeklyOffer = weeklyRegular - blockPrice;
-    const monthlyRegular = weeklyOffer * 4;
-    const monthlyOffer = monthlyRegular - weeklyOffer;
+    const monthlyRegular = weeklyRegular * 4;
+    const monthlyOffer = monthlyRegular - weeklyRegular;
     if (chosenCourses.length === 1) {
       promoFrequency.hidden = true;
       promoSummary.innerHTML = `<strong>${chosenCourses[0].value} · ${totalBlocks} ${totalBlocks === 1 ? 'bloque' : 'bloques'}.</strong> Promo mensual: <del>S/ ${monthlyRegular}</del> <b>S/ ${monthlyOffer}</b>.`;
@@ -362,8 +362,8 @@ if (currentPage === 'nivel.html') {
     const blocks = coursesToPrice.reduce((total, title) => total + (level.courses.find(([course]) => course === title)?.[2] || 0), 0);
     const weeklyRegular = blocks * blockPrice;
     const weeklyOffer = weeklyRegular - blockPrice;
-    const monthlyRegular = weeklyOffer * 4;
-    const monthlyOffer = monthlyRegular - weeklyOffer;
+    const monthlyRegular = weeklyRegular * 4;
+    const monthlyOffer = monthlyRegular - weeklyRegular;
     if (coursesToPrice.length === 1) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: 'monthly' };
     if (coursesToPrice.length > 1) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: activeCadence };
     return { valid: false, blocks, weeklyRegular };
