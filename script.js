@@ -719,14 +719,24 @@ if (form && form.isConnected) {
   if (submitButton) form.insertBefore(consent, submitButton);
   const turnstile = document.createElement('div');
   turnstile.className = 'cf-turnstile';
-  turnstile.dataset.sitekey = turnstileSiteKey;
+  let turnstileWidgetId;
+  const renderTurnstile = () => {
+    if (window.turnstile && turnstileWidgetId === undefined) {
+      turnstileWidgetId = window.turnstile.render(turnstile, { sitekey: turnstileSiteKey });
+    }
+  };
   if (submitButton) form.insertBefore(turnstile, submitButton);
-  if (!document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) {
+  const existingTurnstileScript = document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
+  if (!existingTurnstileScript) {
     const turnstileScript = document.createElement('script');
-    turnstileScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    turnstileScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
     turnstileScript.async = true;
     turnstileScript.defer = true;
+    turnstileScript.addEventListener('load', renderTurnstile);
     document.head.append(turnstileScript);
+  } else {
+    existingTurnstileScript.addEventListener('load', renderTurnstile);
+    renderTurnstile();
   }
   if (selectedLevel || selectedCourse || selectedPackage || selectedTurn) {
     const selection = document.createElement('p');
@@ -804,8 +814,10 @@ if (form && form.isConnected) {
         message.replaceChildren('Solicitud guardada. ', link);
       }
       form.reset();
+      if (turnstileWidgetId !== undefined && window.turnstile) window.turnstile.reset(turnstileWidgetId);
     } catch (error) {
       whatsappWindow?.close();
+      if (turnstileWidgetId !== undefined && window.turnstile) window.turnstile.reset(turnstileWidgetId);
       message.textContent = error instanceof Error ? error.message : 'No pudimos guardar tu solicitud. Intenta nuevamente en unos minutos.';
     } finally {
       if (submitButton) submitButton.disabled = false;
