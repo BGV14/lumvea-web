@@ -10,7 +10,7 @@ let adminState = { view: 'usuarios', currentUserId: '', profiles: [], courses: [
 function addGlobalNav() {
   document.querySelector('.aula-header')?.remove();
   const header = document.createElement('header');
-  header.className = 'aula-header';
+  header.className = 'site-header aula-header';
   header.innerHTML = '<a href="../index.html"><img src="../assets/logos/lumvea-header.png" alt="LUMVEA Educación" /></a><button type="button" aria-expanded="false" aria-controls="public-navigation">Menú</button><nav id="public-navigation"><a href="../index.html">Inicio</a><a href="../programas.html">Programas</a><a href="../nivel.html">Horarios</a><a href="../metodo.html">Método</a><a href="../aula/">Aula virtual</a><a href="../inscripcion.html">Inscripción</a></nav>';
   header.querySelector('button').addEventListener('click', () => {
     const open = header.classList.toggle('is-open');
