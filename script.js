@@ -372,6 +372,11 @@ if (form) {
   }
   const contactFields = [form.querySelector('input[type="text"]'), form.querySelector('input[type="tel"]')].filter(Boolean);
   const [nameField, phoneField] = contactFields;
+  contactFields.forEach((field) => {
+    field.disabled = false;
+    field.readOnly = false;
+    field.removeAttribute('aria-disabled');
+  });
   if (nameField) nameField.autocomplete = 'name';
   if (phoneField) {
     phoneField.autocomplete = 'tel';
