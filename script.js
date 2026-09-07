@@ -278,7 +278,10 @@ if (currentPage === 'index.html') {
   if (heroEyebrow) heroEyebrow.textContent = 'EDUCACIÓN VIRTUAL PARA CADA ETAPA';
   if (heroTitle) heroTitle.innerHTML = 'Aprende, avanza y alcanza <span>tu próxima meta.</span>';
   if (heroText) heroText.textContent = 'Acompañamos a estudiantes de primaria, secundaria y preuniversitaria con clases en vivo, práctica y una ruta de aprendizaje clara.';
-  if (heroActions) heroActions.innerHTML = '<a class="button button-plain level-choice" href="nivel.html?nivel=primaria&vista=inicio">Ver Primaria</a><a class="button button-plain level-choice" href="nivel.html?nivel=secundaria&vista=inicio">Ver Secundaria</a><a class="button button-plain level-choice" href="nivel.html?nivel=preuniversitaria&vista=inicio">Ver Preuniversitaria</a>';
+  if (heroActions) {
+    heroActions.classList.add('overview-links');
+    heroActions.innerHTML = '<a href="nivel.html?nivel=primaria&vista=inicio">Ver Primaria</a><a href="nivel.html?nivel=secundaria&vista=inicio">Ver Secundaria</a><a href="nivel.html?nivel=preuniversitaria&vista=inicio">Ver Preuniversitaria</a>';
+  }
   if (heroFacts) heroFacts.innerHTML = '<div><dt>Niveles</dt><dd>Primaria, secundaria y preuniversitaria</dd></div><div><dt>Clases</dt><dd>En vivo</dd></div><div><dt>Modalidad</dt><dd>100% virtual</dd></div>';
   const method = document.querySelector('.method');
   if (method) {
