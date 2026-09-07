@@ -111,7 +111,7 @@ serve(async (request) => {
       .eq('celular', celular)
       .gte('created_at', oneHourAgo);
     if (limitError) throw limitError;
-    if ((count ?? 0) >= 3) {
+    if ((count ?? 0) >= 10) {
       return new Response(JSON.stringify({ error: 'Ya recibimos varias solicitudes desde este celular. Intenta nuevamente en una hora.' }), { status: 429, headers });
     }
     const { error } = await supabase.from('solicitudes').insert({

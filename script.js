@@ -754,6 +754,12 @@ if (form && form.isConnected) {
       message.textContent = honeypot.value ? 'No se pudo procesar la solicitud.' : !turnstileToken ? 'Completa la verificación de seguridad para continuar.' : 'Ingresa un celular peruano válido de 9 dígitos que empiece con 9.';
       return;
     }
+    // Opening a tab during the click avoids popup blockers after the network request.
+    const whatsappWindow = window.open('', '_blank');
+    if (whatsappWindow) whatsappWindow.opener = null;
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
+    message.textContent = 'Guardando tu solicitud...';
     try {
       const savedRequest = await saveRequest({
         nombre_completo: nameField.value.trim(),
@@ -786,11 +792,23 @@ if (form && form.isConnected) {
         `Nombre completo: ${nameField.value.trim()}`,
         `Celular: ${phoneField.value.trim()}`,
       ].join('\n');
-      window.open(whatsappLink(whatsappMessage), '_blank', 'noopener');
-      message.textContent = 'Solicitud guardada. Abrimos WhatsApp con los datos enviados.';
+      if (whatsappWindow) {
+        whatsappWindow.location.href = whatsappLink(whatsappMessage);
+        message.textContent = 'Solicitud guardada. Abrimos WhatsApp con los datos enviados.';
+      } else {
+        const link = document.createElement('a');
+        link.href = whatsappLink(whatsappMessage);
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Abrir WhatsApp';
+        message.replaceChildren('Solicitud guardada. ', link);
+      }
       form.reset();
     } catch (error) {
+      whatsappWindow?.close();
       message.textContent = error instanceof Error ? error.message : 'No pudimos guardar tu solicitud. Intenta nuevamente en unos minutos.';
+    } finally {
+      if (submitButton) submitButton.disabled = false;
     }
   });
 }
