@@ -6,6 +6,7 @@ button { cursor:pointer; }
 .login { min-height:100vh; display:grid; place-items:center; padding:24px; }
 .login-card { width:min(100%,430px); padding:42px; background:#fff; border-top:5px solid var(--orange); box-shadow:0 22px 50px rgba(16,33,61,.12); }
 .wordmark { color:var(--blue); font-weight:700; letter-spacing:.06em; }
+.wordmark img { display:block; width:190px; max-width:100%; height:auto; }
 h1 { margin:14px 0 8px; font-size:clamp(2rem,5vw,3rem); line-height:1; }
 p { line-height:1.55; }
 .muted { color:var(--muted); }
@@ -36,6 +37,7 @@ ul { padding:0; margin:16px 0 0; list-style:none; } li { padding:13px 0; border-
 @media (max-width:1100px) { .shell { grid-template-columns:190px minmax(0,1fr); } .next,.courses { grid-column:span 12; } .session > div { min-width:0; } .session h2 { overflow-wrap:anywhere; } }
 @media (max-width:700px) { .shell { display:block; } aside { position:sticky; z-index:10; top:0; height:auto; min-height:64px; display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px; padding:13px 18px; box-shadow:0 2px 10px rgba(16,33,61,.2); } .nav-title { display:none; } .nav-item { grid-column:1; grid-row:2; width:max-content; min-height:44px; padding:11px 12px; } .signout { grid-column:2; grid-row:1 / span 2; width:auto; margin:0; padding:8px 12px; font-size:.82rem; } .content { padding:28px 18px 40px; } .topbar { display:block; }.user { text-align:left; margin-top:14px; }.grid { margin-top:24px; gap:14px; }.next,.courses,.materials { grid-column:span 12; }.session { display:block; }.session .action { margin-top:14px; } }
 @media (max-width:900px) { .shell { display:block; } .nav-toggle { display:block; position:fixed; z-index:20; top:14px; left:14px; min-height:42px; padding:0 12px; border:1px solid #7691b4; background:var(--blue); color:#fff; } aside { position:fixed; z-index:15; width:220px; transform:translateX(-100%); transition:transform .2s ease; } aside.is-open { transform:translateX(0); } .content { width:100%; max-width:none; padding-top:86px; transition:margin-left .2s ease, width .2s ease; } .shell:has(aside.is-open) .content { width:calc(100% - 220px); margin-left:220px; } }
+@media (min-width:901px) { .shell { display:block; } aside { position:sticky; z-index:10; width:100%; height:auto; min-height:92px; flex-direction:row; align-items:center; gap:30px; padding:18px clamp(28px,7vw,110px); background:#fff; color:var(--ink); border-bottom:1px solid var(--line); } .nav-title { display:none; } .nav-item { margin-left:auto; border-left:0; background:transparent; color:var(--ink); font-weight:700; } .signout { width:auto; margin:0; border-color:var(--line); color:var(--ink); } .content { margin:auto; } }
 @media (max-width:700px) { aside { display:block; width:260px; padding:76px 20px 20px; } .nav-title { display:block; margin:0 0 14px; } .nav-item { display:block; width:100%; } .signout { width:100%; margin:20px 0 0; } .shell:has(aside.is-open) .content { width:100%; margin-left:0; } }
 /* Tablet and phone use an overlay drawer; the app canvas never loses width. */
 @media (max-width:900px) { .shell:has(aside.is-open) .content { width:100%; margin-left:0; } }
