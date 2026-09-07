@@ -394,7 +394,7 @@ if (form) {
     const option = Array.from(levelField.options).find((item) => item.value.toLowerCase() === selectedLevel || item.text.toLowerCase() === selectedLevel);
     if (option) levelField.value = option.value;
   }
-  const contactFields = [form.querySelector('input[type="text"]'), form.querySelector('input[type="tel"]')].filter(Boolean);
+  const contactFields = [form.querySelector('#name'), form.querySelector('#phone')].filter(Boolean);
   const [nameField, phoneField] = contactFields;
   form.querySelectorAll('fieldset[disabled]').forEach((fieldset) => { fieldset.disabled = false; });
   contactFields.forEach((field) => {
@@ -402,10 +402,15 @@ if (form) {
     field.readOnly = false;
     field.removeAttribute('aria-disabled');
     field.tabIndex = 0;
+    field.closest('.form-row').hidden = false;
     field.addEventListener('pointerdown', () => { field.focus(); });
   });
-  if (nameField) nameField.autocomplete = 'name';
+  if (nameField) {
+    nameField.type = 'text';
+    nameField.autocomplete = 'name';
+  }
   if (phoneField) {
+    phoneField.type = 'tel';
     phoneField.autocomplete = 'tel';
     phoneField.inputMode = 'numeric';
     phoneField.maxLength = 9;
