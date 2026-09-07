@@ -813,17 +813,6 @@ if (form && form.isConnected) {
   });
 }
 
-if (!form) {
-  const whatsappButton = document.createElement('a');
-  whatsappButton.className = 'whatsapp-float';
-  whatsappButton.href = 'https://wa.me/51907283417?text=Hola%2C%20quisiera%20recibir%20informaci%C3%B3n%20sobre%20LUMVEA.';
-  whatsappButton.target = '_blank';
-  whatsappButton.rel = 'noopener noreferrer';
-  whatsappButton.setAttribute('aria-label', 'Escribir a LUMVEA por WhatsApp');
-  whatsappButton.innerHTML = '<span class="whatsapp-mark" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3a8.5 8.5 0 0 0-7.3 12.85L3.5 20.5l4.77-1.16A8.5 8.5 0 1 0 12 3Zm0 15.5a7 7 0 0 1-3.35-.86l-.34-.18-2.83.69.73-2.75-.2-.36A7 7 0 1 1 12 18.5Zm3.84-5.22c-.21-.11-1.24-.61-1.43-.68-.19-.07-.33-.11-.47.11-.14.21-.54.68-.66.82-.12.14-.24.16-.45.05a5.72 5.72 0 0 1-1.68-1.04 6.3 6.3 0 0 1-1.16-1.45c-.12-.21-.01-.32.09-.42.09-.09.21-.24.31-.36.1-.12.14-.21.21-.35.07-.14.03-.26-.02-.37-.05-.11-.47-1.13-.64-1.55-.17-.4-.34-.35-.47-.36h-.4c-.14 0-.36.05-.55.26-.19.21-.72.7-.72 1.71s.74 1.98.84 2.12c.1.14 1.46 2.23 3.54 3.13.49.21.88.34 1.18.43.5.16.96.14 1.32.08.4-.06 1.24-.51 1.41-1 .17-.48.17-.9.12-.98-.05-.09-.19-.14-.4-.24Z" fill="currentColor" /></svg></span><span>WhatsApp</span>';
-  document.body.append(whatsappButton);
-}
-
 document.querySelectorAll('.site-footer p').forEach((paragraph) => {
   if (!paragraph.querySelector('#year')) paragraph.textContent = 'Educación virtual para primaria, secundaria y preuniversitaria.';
 });
