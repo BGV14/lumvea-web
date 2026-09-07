@@ -233,6 +233,10 @@ if (currentPage === 'nivel.html') {
     const weeklyOffer = coursesInPackage.length > 1 ? weeklyRegular - blockPrice : weeklyRegular;
     return { courses: coursesInPackage, weeklyRegular, weeklyOffer, monthlyOffer: weeklyOffer * 3 };
   };
+  const predefinedPackageForCourses = (coursesToMatch) => {
+    const normalizedCourses = [...coursesToMatch].sort().join('|');
+    return level.packages.find(([packageName]) => courseNamesForPackage(packageName).sort().join('|') === normalizedCourses)?.[0] || '';
+  };
   const promotionBuilder = `<section class="custom-promotion section"><p class="eyebrow">ARMA TU PROMOCIÓN</p><h2>Combina cursos y crea tu propio paquete.</h2><p class="content-lead">Un curso tiene promoción mensual. Al combinar cursos, podrás elegir una promoción semanal o mensual; desde tres bloques se descuenta un bloque por semana.</p><div class="promo-rules"><span><b>1 curso</b> · Solo promoción mensual</span><span><b>2 o más cursos</b> · Elige semanal o mensual</span></div><div class="promo-course-grid">${level.courses.map(([title, area, blocks]) => `<label class="promo-course-option"><input type="checkbox" data-promo-course data-blocks="${blocks}" value="${title}"${selectedCourse === title ? ' checked' : ''} /><span><b>${title}</b><small>${area} · ${blocks} ${blocks === 1 ? 'bloque' : 'bloques'}</small></span></label>`).join('')}</div><div class="promo-summary" aria-live="polite">Selecciona cursos para calcular tu promoción.</div><div class="promo-frequency" hidden><p>Elige la modalidad que prefieras:</p><div><button type="button" data-promo-frequency="weekly"></button><button type="button" data-promo-frequency="monthly"></button></div></div><button class="button button-primary custom-promo-continue" type="button" disabled>Continuar con esta promoción</button></section>`;
   const summary = `<section class="level-content section level-start"><p class="eyebrow">EMPIEZA AQUÍ</p><h2>¿Qué quieres revisar?</h2><p class="content-lead">Selecciona una opción para conocer las materias, ver el horario semanal o comparar los paquetes disponibles.</p><div class="overview-links"><a href="${levelUrl('cursos')}">Cursos y materias</a><a href="${levelUrl('horario')}">Horario semanal</a><a href="${levelUrl('paquetes')}">Paquetes y ofertas</a></div></section>`;
   app.innerHTML = intro + (view === 'cursos' ? courses : view === 'horario' ? schedule : view === 'paquetes' ? packages : summary);
@@ -357,12 +361,15 @@ if (currentPage === 'nivel.html') {
     };
     const renderSelectionSummary = () => {
       const promotion = calculatePromotion(activeCourses);
+      const predefinedPackage = predefinedPackageForCourses(activeCourses);
+      activePackage = predefinedPackage || 'Promoción personalizada';
+      const contextDetails = predefinedPackage ? '' : ` · Cursos: ${activeCourses.join(', ') || 'ninguno'}`;
       if (!promotion.valid) {
         activePrice = '';
         priceSummary.textContent = activeCourses.length ? `${promotion.blocks} bloques seleccionados. Agrega cursos hasta llegar a 3 bloques para activar la promoción.` : 'Selecciona al menos un curso.';
         frequency.hidden = true;
         applySelection.disabled = true;
-        document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage} · Cursos: ${activeCourses.join(', ') || 'ninguno'}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
+        document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage}${contextDetails}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
         return;
       }
       if (activeCourses.length === 1) {
@@ -382,11 +389,10 @@ if (currentPage === 'nivel.html') {
         activePrice = `S/ ${activeCadence === 'weekly' ? promotion.weeklyOffer : promotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
       }
       applySelection.disabled = false;
-      document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage} · Cursos: ${activeCourses.join(', ')} · ${activeCadence === 'weekly' ? 'Promoción semanal' : 'Promoción mensual'} · ${activePrice}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
+      document.querySelector('.form-selection')?.replaceChildren(`Paquete actual: ${activePackage}${contextDetails} · ${activeCadence === 'weekly' ? 'Promoción semanal' : 'Promoción mensual'} · ${activePrice}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`);
     };
     const toggleCourse = (course) => {
       activeCourses = activeCourses.includes(course) ? activeCourses.filter((title) => title !== course) : [...activeCourses, course];
-      activePackage = 'Promoción personalizada';
       updateScheduleSelection();
       renderSelectionSummary();
       applySelection.textContent = 'Aplicar selección';
@@ -408,7 +414,7 @@ if (currentPage === 'nivel.html') {
     applySelection.addEventListener('click', () => {
       const promotion = calculatePromotion(activeCourses);
       activePrice = `S/ ${activeCadence === 'weekly' ? promotion.weeklyOffer : promotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
-      activePackage = 'Promoción personalizada';
+      activePackage = predefinedPackageForCourses(activeCourses) || 'Promoción personalizada';
       const selectionParams = new URLSearchParams({ nivel: levelKey, vista: 'horario', origen: 'paquete', paquete: activePackage, cursos: activeCourses.join('|'), turno: activeTurn, precio: activePrice, modalidad: activeCadence });
       history.replaceState(null, '', `nivel.html?${selectionParams}`);
       shiftContact.href = enrollmentUrlForShift(activeTurn);
@@ -439,7 +445,8 @@ if (currentPage === 'nivel.html') {
   if (view === 'horario' && (selectedCourse || selectedCourses.length || selectedPackage)) {
     const scheduleContext = document.createElement('p');
     scheduleContext.className = 'form-selection';
-    scheduleContext.textContent = `${selectedPackage ? `Paquete elegido: ${selectedPackage}` : `Curso de interés: ${selectedCourse}`}${activeCourses.length ? ` · Cursos: ${activeCourses.join(', ')}` : ''}${selectedPrice ? ` · ${selectedPrice}` : ''}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`;
+    const predefinedPackage = predefinedPackageForCourses(activeCourses);
+    scheduleContext.textContent = `${predefinedPackage ? `Paquete actual: ${predefinedPackage}` : selectedPackage ? `Paquete actual: ${selectedPackage}${activeCourses.length ? ` · Cursos: ${activeCourses.join(', ')}` : ''}` : `Curso de interés: ${selectedCourse}`}${selectedPrice ? ` · ${selectedPrice}` : ''}. Ajusta tu selección directamente en el horario y conserva el turno elegido.`;
     document.querySelector('.shift-switch')?.before(scheduleContext);
   }
   const enrollmentUrlForShift = (shift) => {
