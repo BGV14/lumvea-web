@@ -75,6 +75,7 @@ document.querySelectorAll('.nav-dropdown').forEach((dropdown) => {
   dropdown.addEventListener('mouseleave', () => {
     dropdown.classList.remove('is-open');
     dropdown.querySelectorAll('button').forEach((button) => button.setAttribute('aria-expanded', 'false'));
+    if (dropdown.contains(document.activeElement)) document.activeElement.blur();
   });
 });
 
