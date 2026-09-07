@@ -40,7 +40,6 @@ async function saveRequest(request) {
       apikey: supabasePublishableKey,
       Authorization: `Bearer ${supabasePublishableKey}`,
       'Content-Type': 'application/json',
-      Prefer: 'return=minimal',
     },
     body: JSON.stringify(request),
   });
