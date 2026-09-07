@@ -16,7 +16,7 @@ if (navigation) {
     { href: 'nivel.html?nivel=secundaria&vista=inicio', label: 'Secundaria', items: [['nivel.html?nivel=secundaria&vista=inicio', 'Ver nivel'], ['nivel.html?nivel=secundaria&vista=cursos', 'Cursos'], ['nivel.html?nivel=secundaria&vista=horario', 'Horario'], ['nivel.html?nivel=secundaria&vista=paquetes', 'Paquetes']] },
     { href: 'nivel.html?nivel=preuniversitaria&vista=inicio', label: 'Preuniversitaria', items: [['nivel.html?nivel=preuniversitaria&vista=inicio', 'Ver nivel'], ['nivel.html?nivel=preuniversitaria&vista=cursos', 'Cursos y turnos'], ['nivel.html?nivel=preuniversitaria&vista=horario', 'Bloques horarios'], ['nivel.html?nivel=preuniversitaria&vista=paquetes', 'Paquetes']] },
     { href: 'metodo.html', label: 'Método' },
-    { href: 'aula-virtual.html', label: 'Aula virtual' },
+    { href: 'aula/', label: 'Aula virtual' },
     { href: 'inscripcion.html?origen=directo', label: 'Inscripción' },
   ];
   navigation.innerHTML = links.map(({ href, label, items }) => {
