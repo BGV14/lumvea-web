@@ -477,7 +477,6 @@ if (form) {
       return;
     }
     const turnLabel = selectedTurn === 'morning' ? 'Turno mañana' : selectedTurn === 'evening' ? 'Turno tarde / noche' : '';
-    const selection = [selectedPackage && `Paquete: ${selectedPackage}`, turnLabel, selectedLevel && `Nivel: ${selectedLevel}`].filter(Boolean).join('\n');
     try {
       await saveRequest({
         nombre_completo: nameField.value.trim(),
@@ -487,7 +486,17 @@ if (form) {
         turno: turnLabel || null,
         turnstile_token: turnstileToken,
       });
-      window.open(whatsappLink(`Hola, quiero solicitar información e inscribirme en LUMVEA.\n${selection}\nNombre completo: ${nameField.value.trim()}\nCelular: ${phoneField.value.trim()}`), '_blank', 'noopener');
+      const whatsappMessage = [
+        'Hola, quiero recibir información e inscribirme en LUMVEA.',
+        '',
+        'Datos de la solicitud:',
+        `Nivel: ${selectedLevel || 'No especificado'}`,
+        `Paquete: ${selectedPackage || 'No especificado'}`,
+        `Turno: ${turnLabel || 'No especificado'}`,
+        `Nombre completo: ${nameField.value.trim()}`,
+        `Celular: ${phoneField.value.trim()}`,
+      ].join('\n');
+      window.open(whatsappLink(whatsappMessage), '_blank', 'noopener');
       message.textContent = 'Solicitud guardada. Abrimos WhatsApp con los datos enviados.';
       form.reset();
     } catch (error) {
