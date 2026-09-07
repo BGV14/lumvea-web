@@ -66,15 +66,17 @@ function calculatePromotion(level: keyof typeof courseBlocks, courseText: string
   const blocks = uniqueCourses.reduce((total, course) => total + catalog[course as keyof typeof catalog], 0);
   const rate = level === 'preuniversitaria' ? 4 : 3;
   const weeklyRegular = blocks * rate;
+  const weeklyOffer = weeklyRegular - rate;
+  const monthlyRegular = weeklyOffer * 4;
+  const monthlyOffer = monthlyRegular - weeklyOffer;
   if (uniqueCourses.length === 1) {
-    return { courses: uniqueCourses, blocks, packageName: 'Promoción mensual personalizada', price: `S/ ${weeklyRegular * 3} / mes`, cadence: 'monthly' };
+    return { courses: uniqueCourses, blocks, packageName: 'Promoción mensual personalizada', price: `S/ ${monthlyOffer} / mes`, cadence: 'monthly' };
   }
   if (blocks < 3) throw new Error('La combinación debe tener al menos 3 bloques.');
   if (!['weekly', 'monthly'].includes(cadence)) throw new Error('Modalidad inválida.');
-  const weeklyOffer = weeklyRegular - rate;
   return cadence === 'weekly'
     ? { courses: uniqueCourses, blocks, packageName: 'Promoción semanal personalizada', price: `S/ ${weeklyOffer} / semana`, cadence }
-    : { courses: uniqueCourses, blocks, packageName: 'Promoción mensual personalizada', price: `S/ ${weeklyOffer * 3} / mes`, cadence };
+    : { courses: uniqueCourses, blocks, packageName: 'Promoción mensual personalizada', price: `S/ ${monthlyOffer} / mes`, cadence };
 }
 
 serve(async (request) => {

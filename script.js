@@ -314,10 +314,12 @@ if (currentPage === 'nivel.html') {
       return;
     }
     const weeklyRegular = totalBlocks * blockPrice;
+    const weeklyOffer = weeklyRegular - blockPrice;
+    const monthlyRegular = weeklyOffer * 4;
+    const monthlyOffer = monthlyRegular - weeklyOffer;
     if (chosenCourses.length === 1) {
-      const monthlyOffer = weeklyRegular * 3;
       promoFrequency.hidden = true;
-      promoSummary.innerHTML = `<strong>${chosenCourses[0].value} · ${totalBlocks} ${totalBlocks === 1 ? 'bloque' : 'bloques'}.</strong> Promo mensual: <del>S/ ${weeklyRegular * 4}</del> <b>S/ ${monthlyOffer}</b>.`;
+      promoSummary.innerHTML = `<strong>${chosenCourses[0].value} · ${totalBlocks} ${totalBlocks === 1 ? 'bloque' : 'bloques'}.</strong> Promo mensual: <del>S/ ${monthlyRegular}</del> <b>S/ ${monthlyOffer}</b>.`;
       promotionTurns.hidden = false;
       promotionTurns.dataset.courses = chosenCourses[0].value;
       promotionTurns.dataset.package = 'Promoción mensual personalizada';
@@ -331,9 +333,6 @@ if (currentPage === 'nivel.html') {
       promotionTurns.hidden = true;
       return;
     }
-    const weeklyOffer = weeklyRegular - blockPrice;
-    const monthlyRegular = weeklyRegular * 4;
-    const monthlyOffer = weeklyOffer * 3;
     promoSummary.innerHTML = `<strong>${totalBlocks} bloques seleccionados.</strong> Semana: <del>S/ ${weeklyRegular}</del> <b>S/ ${weeklyOffer}</b> · Mes: <del>S/ ${monthlyRegular}</del> <b>S/ ${monthlyOffer}</b>.`;
     promoFrequency.hidden = false;
     promoFrequencyButtons.forEach((button) => {
@@ -368,8 +367,11 @@ if (currentPage === 'nivel.html') {
   const calculatePromotion = (coursesToPrice) => {
     const blocks = coursesToPrice.reduce((total, title) => total + (level.courses.find(([course]) => course === title)?.[2] || 0), 0);
     const weeklyRegular = blocks * blockPrice;
-    if (coursesToPrice.length === 1) return { valid: true, blocks, weeklyRegular, weeklyOffer: null, monthlyOffer: weeklyRegular * 3, cadence: 'monthly' };
-    if (coursesToPrice.length > 1 && blocks >= 3) return { valid: true, blocks, weeklyRegular, weeklyOffer: weeklyRegular - blockPrice, monthlyOffer: (weeklyRegular - blockPrice) * 3, cadence: activeCadence };
+    const weeklyOffer = weeklyRegular - blockPrice;
+    const monthlyRegular = weeklyOffer * 4;
+    const monthlyOffer = monthlyRegular - weeklyOffer;
+    if (coursesToPrice.length === 1) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: 'monthly' };
+    if (coursesToPrice.length > 1 && blocks >= 3) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: activeCadence };
     return { valid: false, blocks, weeklyRegular };
   };
   if (activeCourses.length && !activePrice) {
@@ -452,7 +454,7 @@ if (currentPage === 'nivel.html') {
         activeCadence = 'monthly';
         activePrice = `S/ ${promotion.monthlyOffer} / mes`;
         frequency.hidden = true;
-        priceSummary.innerHTML = `<b>${promotion.blocks} ${promotion.blocks === 1 ? 'bloque' : 'bloques'} seleccionado${promotion.blocks === 1 ? '' : 's'}.</b> Mensual: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer} (3 semanas).`;
+        priceSummary.innerHTML = `<b>${promotion.blocks} ${promotion.blocks === 1 ? 'bloque' : 'bloques'} seleccionado${promotion.blocks === 1 ? '' : 's'}.</b> Mensual: <del>S/ ${promotion.monthlyRegular}</del> S/ ${promotion.monthlyOffer} (3 semanas).`;
       } else {
         frequency.hidden = false;
         frequency.querySelectorAll('button').forEach((button) => {
@@ -461,7 +463,7 @@ if (currentPage === 'nivel.html') {
           button.setAttribute('aria-pressed', String(selected));
           button.textContent = button.dataset.scheduleFrequency === 'weekly' ? `Semanal · S/ ${promotion.weeklyOffer}` : `Mensual · S/ ${promotion.monthlyOffer}`;
         });
-        priceSummary.innerHTML = `<b>${promotion.blocks} bloques seleccionados.</b> Semana: <del>S/ ${promotion.weeklyRegular}</del> S/ ${promotion.weeklyOffer} · Mes: <del>S/ ${promotion.weeklyRegular * 4}</del> S/ ${promotion.monthlyOffer}.`;
+        priceSummary.innerHTML = `<b>${promotion.blocks} bloques seleccionados.</b> Semana: <del>S/ ${promotion.weeklyRegular}</del> S/ ${promotion.weeklyOffer} · Mes: <del>S/ ${promotion.monthlyRegular}</del> S/ ${promotion.monthlyOffer}.`;
         activePrice = `S/ ${activeCadence === 'weekly' ? promotion.weeklyOffer : promotion.monthlyOffer} / ${activeCadence === 'weekly' ? 'semana' : 'mes'}`;
       }
       confirmSelection.href = enrollmentUrlForShift(activeTurn);
