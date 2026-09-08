@@ -13,11 +13,12 @@ Deno.serve(async (request) => {
     if (authError || !auth.user) return new Response(JSON.stringify({ error: 'Sesión inválida.' }), { status: 401, headers: corsHeaders });
     const { data: profile } = await admin.from('perfiles').select('rol').eq('id', auth.user.id).single();
     if (profile?.rol !== 'administrador') return new Response(JSON.stringify({ error: 'No autorizado.' }), { status: 403, headers: corsHeaders });
-    const { nombre_completo, email, password, rol } = await request.json();
-    if (!nombre_completo || !email || !password || !['estudiante', 'docente', 'administrador'].includes(rol)) return new Response(JSON.stringify({ error: 'Datos inválidos.' }), { status: 400, headers: corsHeaders });
-    const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name: nombre_completo } });
+    const { nombre_completo, email, rol } = await request.json();
+    if (!nombre_completo || !email || !['estudiante', 'docente', 'administrador'].includes(rol)) return new Response(JSON.stringify({ error: 'Datos inválidos.' }), { status: 400, headers: corsHeaders });
+    const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: nombre_completo }, redirectTo: 'https://lumvea-aula-virtual.vercel.app' });
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
-    await admin.from('perfiles').upsert({ id: data.user.id, nombre_completo, rol });
+    const { error: profileError } = await admin.from('perfiles').upsert({ id: data.user.id, nombre_completo, rol });
+    if (profileError) return new Response(JSON.stringify({ error: 'No se pudo asignar el rol del usuario invitado.' }), { status: 500, headers: corsHeaders });
     return Response.json({ ok: true, id: data.user.id }, { headers: corsHeaders });
-  } catch { return new Response(JSON.stringify({ error: 'No se pudo crear el usuario.' }), { status: 500, headers: corsHeaders }); }
+  } catch { return new Response(JSON.stringify({ error: 'No se pudo enviar la invitación.' }), { status: 500, headers: corsHeaders }); }
 });
