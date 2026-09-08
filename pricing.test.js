@@ -4,14 +4,15 @@ const { readFileSync } = require('node:fs');
 const { promotionPricesFor } = require('./pricing.js');
 
 test('custom promotion prices retain the published rate-3 rules', () => {
-  assert.deepEqual(promotionPricesFor(1, 1, 3), { weeklyRegular: 3, weeklyOffer: 0, monthlyRegular: 12, monthlyOffer: 9 });
-  assert.deepEqual(promotionPricesFor(2, 2, 3), { weeklyRegular: 6, weeklyOffer: 3, monthlyRegular: 12, monthlyOffer: 9 });
-  assert.deepEqual(promotionPricesFor(5, 2, 3), { weeklyRegular: 15, weeklyOffer: 12, monthlyRegular: 48, monthlyOffer: 36 });
+  assert.deepEqual(promotionPricesFor(1, 3), { weeklyRegular: 3, weeklyOffer: 0, monthlyRegular: 12, monthlyOffer: 9 });
+  assert.deepEqual(promotionPricesFor(2, 3), { weeklyRegular: 6, weeklyOffer: 3, monthlyRegular: 24, monthlyOffer: 21 });
+  assert.deepEqual(promotionPricesFor(5, 3), { weeklyRegular: 15, weeklyOffer: 12, monthlyRegular: 60, monthlyOffer: 57 });
 });
 
 test('custom promotion prices retain the published rate-4 rules', () => {
-  assert.deepEqual(promotionPricesFor(1, 1, 4), { weeklyRegular: 4, weeklyOffer: 0, monthlyRegular: 16, monthlyOffer: 12 });
-  assert.deepEqual(promotionPricesFor(5, 2, 4), { weeklyRegular: 20, weeklyOffer: 16, monthlyRegular: 64, monthlyOffer: 48 });
+  assert.deepEqual(promotionPricesFor(1, 4), { weeklyRegular: 4, weeklyOffer: 0, monthlyRegular: 16, monthlyOffer: 12 });
+  assert.deepEqual(promotionPricesFor(2, 4), { weeklyRegular: 8, weeklyOffer: 4, monthlyRegular: 32, monthlyOffer: 28 });
+  assert.deepEqual(promotionPricesFor(5, 4), { weeklyRegular: 20, weeklyOffer: 16, monthlyRegular: 80, monthlyOffer: 76 });
 });
 
 test('known official package prices remain unchanged in the catalog', () => {
