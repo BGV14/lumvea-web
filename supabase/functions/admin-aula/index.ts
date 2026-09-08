@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const allowedOrigins = ['https://lumvea-web.vercel.app', 'https://lumvea-aula-virtual.vercel.app'];
 const headers = (request: Request) => ({ 'Access-Control-Allow-Origin': allowedOrigins.includes(request.headers.get('origin') ?? '') ? request.headers.get('origin')! : allowedOrigins[0], 'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Content-Type': 'application/json' });
+const aulaRedirectUrl = 'https://lumvea-aula-virtual.vercel.app';
 
 Deno.serve(async (request) => {
   const corsHeaders = headers(request);
@@ -13,9 +14,25 @@ Deno.serve(async (request) => {
     if (authError || !auth.user) return new Response(JSON.stringify({ error: 'Sesión inválida.' }), { status: 401, headers: corsHeaders });
     const { data: profile } = await admin.from('perfiles').select('rol').eq('id', auth.user.id).single();
     if (profile?.rol !== 'administrador') return new Response(JSON.stringify({ error: 'No autorizado.' }), { status: 403, headers: corsHeaders });
-    const { nombre_completo, email, rol } = await request.json();
+    const body = await request.json();
+    if (body.action === 'list-users') {
+      const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (error) return new Response(JSON.stringify({ error: 'No se pudo cargar los correos de los usuarios.' }), { status: 500, headers: corsHeaders });
+      return Response.json({ users: (data?.users ?? []).map((user) => ({ id: user.id, email: user.email })) }, { headers: corsHeaders });
+    }
+
+    if (body.action === 'reset-password') {
+      const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+      if (!/^\S+@\S+\.\S+$/.test(email)) return new Response(JSON.stringify({ error: 'Correo electrónico inválido.' }), { status: 400, headers: corsHeaders });
+      // This Auth API sends Supabase's recovery email; it never exposes its link or token.
+      const { error } = await admin.auth.resetPasswordForEmail(email, { redirectTo: aulaRedirectUrl });
+      if (error) return new Response(JSON.stringify({ error: 'No se pudo enviar el correo de restablecimiento.' }), { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+
+    const { nombre_completo, email, rol } = body;
     if (!nombre_completo || !email || !['estudiante', 'docente', 'administrador'].includes(rol)) return new Response(JSON.stringify({ error: 'Datos inválidos.' }), { status: 400, headers: corsHeaders });
-    const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: nombre_completo }, redirectTo: 'https://lumvea-aula-virtual.vercel.app' });
+    const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name: nombre_completo }, redirectTo: aulaRedirectUrl });
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400, headers: corsHeaders });
     const { error: profileError } = await admin.from('perfiles').upsert({ id: data.user.id, nombre_completo, rol });
     if (profileError) return new Response(JSON.stringify({ error: 'No se pudo asignar el rol del usuario invitado.' }), { status: 500, headers: corsHeaders });
