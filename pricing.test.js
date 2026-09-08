@@ -19,6 +19,14 @@ test('two one-block courses use the multi-course rate-4 monthly formula', () => 
   assert.deepEqual(promotionPricesFor(2, 4, 2), { weeklyRegular: 8, weeklyOffer: 4, monthlyRegular: 16, monthlyOffer: 12 });
 });
 
+test('primary and secondary use the multi-course formula for a two-block and one-block selection', () => {
+  assert.deepEqual(promotionPricesFor(3, 3, 2), { weeklyRegular: 9, weeklyOffer: 6, monthlyRegular: 24, monthlyOffer: 18 });
+});
+
+test('preuniversity uses the multi-course formula for a two-block and one-block selection', () => {
+  assert.deepEqual(promotionPricesFor(3, 4, 2), { weeklyRegular: 12, weeklyOffer: 8, monthlyRegular: 32, monthlyOffer: 24 });
+});
+
 test('known official package prices remain unchanged in the catalog', () => {
   const source = readFileSync('script.js', 'utf8');
   assert.match(source, /\['Paquete Matemático', \['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría'\], 18, 15, 60, 45\]/);
