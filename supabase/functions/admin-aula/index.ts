@@ -1,7 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const allowedOrigins = ['https://lumvea-web.vercel.app', 'https://lumvea-aula-virtual.vercel.app'];
-const headers = (request: Request) => ({ 'Access-Control-Allow-Origin': allowedOrigins.includes(request.headers.get('origin') ?? '') ? request.headers.get('origin')! : allowedOrigins[0], 'Access-Control-Allow-Headers': 'authorization, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Content-Type': 'application/json' });
+const headers = (request: Request) => ({ 'Access-Control-Allow-Origin': allowedOrigins.includes(request.headers.get('origin') ?? '') ? request.headers.get('origin')! : allowedOrigins[0], 'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Content-Type': 'application/json' });
 
 Deno.serve(async (request) => {
   const corsHeaders = headers(request);
