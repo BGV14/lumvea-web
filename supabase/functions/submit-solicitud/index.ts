@@ -67,9 +67,10 @@ function calculatePromotion(level: keyof typeof courseBlocks, courseText: string
   const rate = level === 'preuniversitaria' ? 4 : 3;
   const weeklyRegular = blocks * rate;
   const weeklyOffer = weeklyRegular - rate;
-  const monthlyRegular = uniqueCourses.length > 1 ? weeklyOffer * 4 : weeklyRegular * 4;
-  const monthlyOffer = uniqueCourses.length > 1 ? monthlyRegular - weeklyOffer : monthlyRegular - rate;
-  if (uniqueCourses.length === 1) {
+  const isMultiBlock = blocks > 1;
+  const monthlyRegular = isMultiBlock ? weeklyOffer * 4 : weeklyRegular * 4;
+  const monthlyOffer = isMultiBlock ? monthlyRegular - weeklyOffer : monthlyRegular - rate;
+  if (blocks === 1) {
     return { courses: uniqueCourses, blocks, packageName: 'Promoción mensual personalizada', price: `S/ ${monthlyOffer} / mes`, cadence: 'monthly' };
   }
   if (!['weekly', 'monthly'].includes(cadence)) throw new Error('Modalidad inválida.');

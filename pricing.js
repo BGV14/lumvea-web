@@ -1,8 +1,9 @@
-const promotionPricesFor = (blocks, blockPrice, selectedCourseCount = 1) => {
+const promotionPricesFor = (blocks, blockPrice) => {
   const weeklyRegular = blocks * blockPrice;
   const weeklyOffer = weeklyRegular - blockPrice;
-  const monthlyRegular = selectedCourseCount > 1 ? weeklyOffer * 4 : weeklyRegular * 4;
-  const monthlyOffer = selectedCourseCount > 1 ? monthlyRegular - weeklyOffer : monthlyRegular - blockPrice;
+  const isMultiBlock = blocks > 1;
+  const monthlyRegular = isMultiBlock ? weeklyOffer * 4 : weeklyRegular * 4;
+  const monthlyOffer = isMultiBlock ? monthlyRegular - weeklyOffer : monthlyRegular - blockPrice;
   return { weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer };
 };
 
