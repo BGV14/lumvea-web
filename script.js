@@ -443,7 +443,7 @@ if (currentPage === 'nivel.html') {
         activeCadence = 'monthly';
         activePrice = `S/ ${promotion.monthlyOffer} / mes`;
         frequency.hidden = true;
-        priceSummary.innerHTML = `<b>${promotion.blocks} ${promotion.blocks === 1 ? 'bloque' : 'bloques'} seleccionado${promotion.blocks === 1 ? '' : 's'}.</b> Mensual: <del>S/ ${promotion.monthlyRegular}</del> S/ ${promotion.monthlyOffer} (3 semanas).`;
+        priceSummary.innerHTML = `<b>${promotion.blocks} ${promotion.blocks === 1 ? 'bloque' : 'bloques'} seleccionado${promotion.blocks === 1 ? '' : 's'}.</b> Mensual: <del>S/ ${promotion.monthlyRegular}</del> S/ ${promotion.monthlyOffer} (4 semanas).`;
       } else {
         frequency.hidden = false;
         frequency.querySelectorAll('button').forEach((button) => {
