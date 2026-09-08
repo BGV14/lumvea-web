@@ -67,8 +67,9 @@ function calculatePromotion(level: keyof typeof courseBlocks, courseText: string
   const rate = level === 'preuniversitaria' ? 4 : 3;
   const weeklyRegular = blocks * rate;
   const weeklyOffer = weeklyRegular - rate;
-  const monthlyRegular = weeklyRegular * 4;
-  const monthlyOffer = monthlyRegular - weeklyRegular;
+  const monthlyBasis = uniqueCourses.length === 1 ? weeklyRegular : weeklyOffer;
+  const monthlyRegular = monthlyBasis * 4;
+  const monthlyOffer = monthlyRegular - monthlyBasis;
   if (uniqueCourses.length === 1) {
     return { courses: uniqueCourses, blocks, packageName: 'Promoción mensual personalizada', price: `S/ ${monthlyOffer} / mes`, cadence: 'monthly' };
   }

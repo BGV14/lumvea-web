@@ -271,11 +271,12 @@ if (currentPage === 'nivel.html') {
   };
   const packages = `<section class="level-content section"><p class="eyebrow">PAQUETES</p><h2>Opciones semanales y mensuales.</h2><p class="content-lead">La mensualidad equivale a cuatro semanas del mismo programa.</p><div class="package-controls level-package-controls" role="group" aria-label="Filtrar paquetes"><button class="level-package-filter is-selected" type="button" data-filter="all" aria-pressed="true">Todos</button><button class="level-package-filter" type="button" data-filter="area" aria-pressed="false">Por área</button><button class="level-package-filter" type="button" data-filter="combo" aria-pressed="false">Combinados</button><button class="level-package-filter" type="button" data-filter="complete" aria-pressed="false">Completo</button></div><div class="package-grid">${level.packages.map(([title, weekly, monthly]) => { const type = title === 'Paquete completo' ? 'complete' : title.includes('+') ? 'combo' : 'area'; const weeklyOffer = Number(weekly.replace('S/ ', '')); const monthlyOffer = Number(monthly.replace('S/ ', '')); const weeklyRegular = weeklyOffer + (levelKey === 'preuniversitaria' ? 4 : 3); const monthlyRegular = levelKey === 'preuniversitaria' ? ({ 70: 96, 24: 32, 60: 80, 84: 112, 36: 48, 120: 160, 156: 208, 108: 144, 276: 368 }[monthlyOffer]) : Math.round(monthlyOffer * 4 / 3); return `<article class="package-card level-package-card" data-type="${type}"><p class="package-label">${type === 'complete' ? 'PREPARACIÓN INTEGRAL' : type === 'combo' ? 'COMBINADO' : 'POR ÁREA'} · ${level.name.toUpperCase()}</p><h3>${title}</h3><p class="package-subjects"><b>Cursos:</b> ${subjectsFor(title)}</p><p class="price-row"><span>Semana</span><del>S/ ${weeklyRegular}</del><strong>${weekly}</strong><em>Oferta</em></p><p class="price-row"><span>Mes: 4 sem.</span><del>S/ ${monthlyRegular}</del><strong>${monthly}</strong><em>Oferta</em></p><button class="choose-package" type="button" data-package="${title}">Elegir paquete</button></article>`; }).join('')}</div><p class="package-selection" aria-live="polite"></p></section>`;
   const blockPrice = levelKey === 'preuniversitaria' ? 4 : 3;
-  const promotionPricesFor = (blocks) => {
+  const promotionPricesFor = (blocks, courseCount) => {
     const weeklyRegular = blocks * blockPrice;
     const weeklyOffer = weeklyRegular - blockPrice;
-    const monthlyRegular = weeklyOffer * 4;
-    const monthlyOffer = monthlyRegular - weeklyOffer;
+    const monthlyBasis = courseCount === 1 ? weeklyRegular : weeklyOffer;
+    const monthlyRegular = monthlyBasis * 4;
+    const monthlyOffer = monthlyRegular - monthlyBasis;
     return { weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer };
   };
   function packageOfferFor(packageName) {
@@ -320,7 +321,7 @@ if (currentPage === 'nivel.html') {
       promotionTurns.hidden = true;
       return;
     }
-    const { weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer } = promotionPricesFor(totalBlocks);
+    const { weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer } = promotionPricesFor(totalBlocks, chosenCourses.length);
     if (chosenCourses.length === 1) {
       promoFrequency.hidden = true;
       promoSummary.innerHTML = `<strong>${chosenCourses[0].value} · ${totalBlocks} ${totalBlocks === 1 ? 'bloque' : 'bloques'}.</strong> Promo mensual: <del>S/ ${monthlyRegular}</del> <b>S/ ${monthlyOffer}</b>.`;
@@ -364,7 +365,7 @@ if (currentPage === 'nivel.html') {
   let activeTurn = ['morning', 'evening'].includes(selectedTurn) ? selectedTurn : 'morning';
   const calculatePromotion = (coursesToPrice) => {
     const blocks = coursesToPrice.reduce((total, title) => total + (level.courses.find(([course]) => course === title)?.[2] || 0), 0);
-    const { weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer } = promotionPricesFor(blocks);
+    const { weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer } = promotionPricesFor(blocks, coursesToPrice.length);
     if (coursesToPrice.length === 1) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: 'monthly' };
     if (coursesToPrice.length > 1) return { valid: true, blocks, weeklyRegular, weeklyOffer, monthlyRegular, monthlyOffer, cadence: activeCadence };
     return { valid: false, blocks, weeklyRegular };
