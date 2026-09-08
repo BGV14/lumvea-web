@@ -26,4 +26,6 @@ input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible { o
 @media (max-width:1000px) { .content-forms { grid-template-columns:1fr; }.content-forms .form-surface { height:auto; } }
 @media (max-width:520px) { .course-filters { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }.course-filter { width:100%; }.course-group-heading { align-items:start; flex-direction:column; gap:3px; } }
 @media (max-width:520px) { .content-heading { align-items:start; }.content-filter { margin-top:14px; width:100%; } }
+.teacher-view { margin-top:22px; }
+@media (max-width:800px) { .teacher-view { margin-top:18px; } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; } }
