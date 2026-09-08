@@ -15,6 +15,10 @@ test('custom promotion prices retain the published rate-4 rules', () => {
   assert.deepEqual(promotionPricesFor(5, 4), { weeklyRegular: 20, weeklyOffer: 16, monthlyRegular: 80, monthlyOffer: 76 });
 });
 
+test('two one-block courses use the multi-course rate-4 monthly formula', () => {
+  assert.deepEqual(promotionPricesFor(2, 4, 2), { weeklyRegular: 8, weeklyOffer: 4, monthlyRegular: 16, monthlyOffer: 12 });
+});
+
 test('known official package prices remain unchanged in the catalog', () => {
   const source = readFileSync('script.js', 'utf8');
   assert.match(source, /\['Paquete Matemático', \['Razonamiento Matemático', 'Aritmética', 'Álgebra', 'Geometría'\], 18, 15, 60, 45\]/);
